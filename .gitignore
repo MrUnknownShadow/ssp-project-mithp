@@ -1,0 +1,7 @@
+comp5700-venv/
+__pycache__/
+*.pyc
+output/
+.DS_Store
+.cursor/
+smoke_test.py
