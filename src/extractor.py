@@ -15,6 +15,8 @@ import yaml
 from pypdf import PdfReader
 from transformers import pipeline
 
+CACHE_DIR = "cache"
+
 logging.getLogger("pypdf").setLevel(logging.ERROR)
 logging.getLogger("transformers").setLevel(logging.ERROR)
 
@@ -257,6 +259,41 @@ def parse_llm_json(raw):
     return {"elements": _salvage_elements(candidate)}
 
 
+def _cache_path(pdf_path, prompt_type, limit):
+    """Build a cache filename keyed by document, prompt type, and limit."""
+    stem = os.path.splitext(os.path.basename(pdf_path))[0]
+    suffix = f"-{limit}" if limit else ""
+    return os.path.join(CACHE_DIR, f"{stem}-{prompt_type}{suffix}.json")
+
+
+def load_or_extract(pdf_path, sections, prompt_type, limit=None, log=None):
+    """Return cached extraction results, or run the LLM and cache them."""
+    path = _cache_path(pdf_path, prompt_type, limit)
+
+    if os.path.isfile(path):
+        with open(path) as handle:
+            cached = json.load(handle)
+        if log is not None:
+            log.extend(cached.get("log", []))
+        print(f"    cached: {len(cached['result']['elements'])} elements")
+        return cached["result"]
+
+    call_log = []
+    result = identify_key_data_elements(
+        sections, prompt_type, limit=limit, log=call_log
+    )
+
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with open(path, "w") as handle:
+        json.dump({"result": result, "log": call_log}, handle)
+
+    if log is not None:
+        log.extend(call_log)
+    return result
+
+
+
+
 def identify_key_data_elements(sections, prompt_type, limit=None, log=None):
     """Task-1: run each section through Gemma and collect key data elements."""
     if prompt_type not in PROMPT_BUILDERS:
@@ -360,8 +397,8 @@ def run_extraction(pdf_path_a, pdf_path_b, limit=None):
 
         for prompt_type in PROMPT_BUILDERS:
             print(f"  {prompt_type}")
-            result = identify_key_data_elements(
-                sections, prompt_type, limit=limit, log=log
+            result = load_or_extract(
+                doc["path"], sections, prompt_type, limit=limit, log=log
             )
             if prompt_type == CANONICAL_PROMPT_TYPE:
                 canonical = result
