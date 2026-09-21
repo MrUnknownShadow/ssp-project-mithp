@@ -1,0 +1,814 @@
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+A key data element (KDE) is a specific configuration item, file, or system component that the document imposes requirements on.
+
+Identify the key data elements in the text below and list the requirements stated for each. List each element at most once.
+
+TEXT:
+Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+All Docker containers and their data and metadata is stored under /var/lib/docker 
+directory. By default, /var/lib/docker should be mounted under either the / or /var 
+partitions dependent on how the Linux operating system in use is configured. 
+Rationale: 
+Docker depends on /var/lib/docker as the default directory where all Docker related 
+files, including the images, are stored. This directory could fill up quickly causing both 
+Docker and the host to become unusable. For this reason, you should create a separate 
+partition (logical volume) for storing Docker files. 
+Impact: 
+None. 
+Audit: 
+At the Docker host execute one of the below commands: 
+grep '/var/lib/docker\s' /proc/mounts 
+This should return the partition details for the /var/lib/docker mountpoint. 
+mountpoint -- "$(docker info -f '{{ .Docker Root Dir }}')" 
+This should return whether the configured root directory is a mount point. 
+Remediation: 
+For new installations, you should create a separate partition for the /var/lib/docker 
+mount point. For systems which have already been installed, you should use the Logical 
+Volume Manager (LVM) within Linux to create a new partition. 
+Default Value: 
+By default, /var/lib/docker is mounted under the / or /var partitions dependent on 
+how the OS is configured. 
+References: 
+1. https://www.projectatomic.io/docs/docker-storage-recommendation/ 
+2. https://docs.docker.com/storage/ 
+Page 13 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+3.12 Segment Data Processing and Storage Based on 
+Sensitivity 
+ Segment data processing and storage based on the sensitivity of the data. 
+Do not process sensitive data on enterprise assets intended for lower sensitivity 
+data. 
+ ● ● 
+v7 14 Controlled Access Based on the Need to Know 
+ Controlled Access Based on the Need to Know    
+ 
+Page 14
+
+Respond with ONLY a JSON object, no markdown, no explanation. Format: {"elements": [{"name": "...", "requirements": ["...", "..."]}]}
+*Prompt Type*
+zero-shot
+*LLM Output*
+```json
+{
+"elements": [
+{"name": "Docker Root Dir", "requirements": ["Create a separate partition for the /var/lib/docker mount point"]},
+{"name": "Linux Operating System Configuration", "requirements": ["Mount /var/lib/docker under / or /var partitions depending on the Linux OS"]}
+]
+}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+A key data element (KDE) is a specific configuration item, file, or system component that the document imposes requirements on.
+
+Identify the key data elements in the text below and list the requirements stated for each. List each element at most once.
+
+TEXT:
+Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+The Docker daemon currently requires access to the Docker socket which is, by default, 
+owned by the user root and the group docker. 
+Rationale: 
+Docker allows you to share a directory between the Docker host and a guest container 
+without limiting the access rights of the container. This means that you can start a 
+container and map the / directory on your host to the container. The container would 
+then be able to modify your host file system without any restrictions. This means that 
+you could gain elevated privileges simply by being a member of the docker group and 
+subsequently start a container which maps the root / directory on the host. 
+Impact: 
+Provided the proceeding instructions are implemented, rights to build and execute 
+containers as normal user would be restricted. 
+Audit: 
+Execute the following command on the docker host and ensure that only trusted users 
+are members of the docker group. 
+getent group docker 
+Remediation: 
+You should remove any untrusted users from the docker group. Additionally, you should 
+not create a mapping of sensitive directories from the host to container volumes. 
+Default Value: 
+Not Applicable 
+References: 
+1. https://docs.docker.com/engine/security/#docker-daemon-attack-surface 
+2. http://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-
+docker-in-centos-fedora-or-rhel/ 
+Page 15 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+6.1 Establish an Access Granting Process 
+ Establish and follow a process, preferably automated, for granting access to 
+enterprise assets upon new hire, rights grant, or role change of a user. 
+● ● ● 
+v7 4 Controlled Use of Administrative Privileges 
+ Controlled Use of Administrative Privileges    
+ 
+Page 16
+
+Respond with ONLY a JSON object, no markdown, no explanation. Format: {"elements": [{"name": "...", "requirements": ["...", "..."]}]}
+*Prompt Type*
+zero-shot
+*LLM Output*
+```json
+{"elements": [{"name": "Level 1 - Docker - Linux", "requirements": ["Access to Docker socket owned by root and docker group"]}, {"name": "Right to build and execute containers as normal user would be restricted", "requirements": ["Restrictions on container creation and execution"]}, {"name": "Remove any untrusted users from the docker group", "requirements": ["Removal of untrusted users from the docker group"]} انشطت","name":"Not Applicable", "requirements": []},]}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+Identify key data elements (KDEs) and their requirements.
+List each element at most once. Emit at most six elements.
+
+EXAMPLE 1
+TEXT: Ensure a separate partition for containers has been created. The /var/lib/docker directory should be mounted on a dedicated partition to avoid filling the host filesystem.
+OUTPUT: {"elements": [{"name": "/var/lib/docker", "requirements": ["Must be mounted on a dedicated partition", "Must not share space with the host filesystem"]}]}
+
+EXAMPLE 2
+TEXT: Ensure the Docker daemon is not run as root where possible. Rootless mode should be enabled. The daemon socket must not be exposed over TCP without TLS.
+OUTPUT: {"elements": [{"name": "Docker daemon", "requirements": ["Should run in rootless mode", "Must not expose the socket over TCP without TLS"]}]}
+
+NOW ANALYZE
+TEXT: Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+All Docker containers and their data and metadata is stored under /var/lib/docker 
+directory. By default, /var/lib/docker should be mounted under either the / or /var 
+partitions dependent on how the Linux operating system in use is configured. 
+Rationale: 
+Docker depends on /var/lib/docker as the default directory where all Docker related 
+files, including the images, are stored. This directory could fill up quickly causing both 
+Docker and the host to become unusable. For this reason, you should create a separate 
+partition (logical volume) for storing Docker files. 
+Impact: 
+None. 
+Audit: 
+At the Docker host execute one of the below commands: 
+grep '/var/lib/docker\s' /proc/mounts 
+This should return the partition details for the /var/lib/docker mountpoint. 
+mountpoint -- "$(docker info -f '{{ .Docker Root Dir }}')" 
+This should return whether the configured root directory is a mount point. 
+Remediation: 
+For new installations, you should create a separate partition for the /var/lib/docker 
+mount point. For systems which have already been installed, you should use the Logical 
+Volume Manager (LVM) within Linux to create a new partition. 
+Default Value: 
+By default, /var/lib/docker is mounted under the / or /var partitions dependent on 
+how the OS is configured. 
+References: 
+1. https://www.projectatomic.io/docs/docker-storage-recommendation/ 
+2. https://docs.docker.com/storage/ 
+Page 13 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+3.12 Segment Data Processing and Storage Based on 
+Sensitivity 
+ Segment data processing and storage based on the sensitivity of the data. 
+Do not process sensitive data on enterprise assets intended for lower sensitivity 
+data. 
+ ● ● 
+v7 14 Controlled Access Based on the Need to Know 
+ Controlled Access Based on the Need to Know    
+ 
+Page 14
+OUTPUT: 
+*Prompt Type*
+few-shot
+*LLM Output*
+```json
+{"elements": [{"name": "Docker Root Dir", "requirements": ["The Docker Root Directory"], "value": "/var/lib/docker"}]}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+Identify key data elements (KDEs) and their requirements.
+List each element at most once. Emit at most six elements.
+
+EXAMPLE 1
+TEXT: Ensure a separate partition for containers has been created. The /var/lib/docker directory should be mounted on a dedicated partition to avoid filling the host filesystem.
+OUTPUT: {"elements": [{"name": "/var/lib/docker", "requirements": ["Must be mounted on a dedicated partition", "Must not share space with the host filesystem"]}]}
+
+EXAMPLE 2
+TEXT: Ensure the Docker daemon is not run as root where possible. Rootless mode should be enabled. The daemon socket must not be exposed over TCP without TLS.
+OUTPUT: {"elements": [{"name": "Docker daemon", "requirements": ["Should run in rootless mode", "Must not expose the socket over TCP without TLS"]}]}
+
+NOW ANALYZE
+TEXT: Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+The Docker daemon currently requires access to the Docker socket which is, by default, 
+owned by the user root and the group docker. 
+Rationale: 
+Docker allows you to share a directory between the Docker host and a guest container 
+without limiting the access rights of the container. This means that you can start a 
+container and map the / directory on your host to the container. The container would 
+then be able to modify your host file system without any restrictions. This means that 
+you could gain elevated privileges simply by being a member of the docker group and 
+subsequently start a container which maps the root / directory on the host. 
+Impact: 
+Provided the proceeding instructions are implemented, rights to build and execute 
+containers as normal user would be restricted. 
+Audit: 
+Execute the following command on the docker host and ensure that only trusted users 
+are members of the docker group. 
+getent group docker 
+Remediation: 
+You should remove any untrusted users from the docker group. Additionally, you should 
+not create a mapping of sensitive directories from the host to container volumes. 
+Default Value: 
+Not Applicable 
+References: 
+1. https://docs.docker.com/engine/security/#docker-daemon-attack-surface 
+2. http://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-
+docker-in-centos-fedora-or-rhel/ 
+Page 15 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+6.1 Establish an Access Granting Process 
+ Establish and follow a process, preferably automated, for granting access to 
+enterprise assets upon new hire, rights grant, or role change of a user. 
+● ● ● 
+v7 4 Controlled Use of Administrative Privileges 
+ Controlled Use of Administrative Privileges    
+ 
+Page 16
+OUTPUT: 
+*Prompt Type*
+few-shot
+*LLM Output*
+```json
+{"elements": [{"name": "Docker daemon", "requirements": ["Requires access to the Docker socket"], "description": "Currently owned by root and the docker group, allowing unrestricted access to the host filesystem."}, {"name": "Access Granting Process", "requirements": ["A process for granting access to enterprise assets"]}, "audit": "Execute the following command on the docker host and ensure that only trusted users are members of the docker group."}]}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+Work through these steps internally before answering:
+Step 1: Identify every file, directory, daemon, socket, or configuration setting named in the text.
+Step 2: For each one, find the sentences that state what it must, should, or must not do.
+Step 3: Discard items that are only mentioned as examples or references and impose no requirement.
+Step 4: Phrase each requirement as a short imperative statement.
+Step 5: Remove any duplicate elements.
+
+TEXT:
+Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+All Docker containers and their data and metadata is stored under /var/lib/docker 
+directory. By default, /var/lib/docker should be mounted under either the / or /var 
+partitions dependent on how the Linux operating system in use is configured. 
+Rationale: 
+Docker depends on /var/lib/docker as the default directory where all Docker related 
+files, including the images, are stored. This directory could fill up quickly causing both 
+Docker and the host to become unusable. For this reason, you should create a separate 
+partition (logical volume) for storing Docker files. 
+Impact: 
+None. 
+Audit: 
+At the Docker host execute one of the below commands: 
+grep '/var/lib/docker\s' /proc/mounts 
+This should return the partition details for the /var/lib/docker mountpoint. 
+mountpoint -- "$(docker info -f '{{ .Docker Root Dir }}')" 
+This should return whether the configured root directory is a mount point. 
+Remediation: 
+For new installations, you should create a separate partition for the /var/lib/docker 
+mount point. For systems which have already been installed, you should use the Logical 
+Volume Manager (LVM) within Linux to create a new partition. 
+Default Value: 
+By default, /var/lib/docker is mounted under the / or /var partitions dependent on 
+how the OS is configured. 
+References: 
+1. https://www.projectatomic.io/docs/docker-storage-recommendation/ 
+2. https://docs.docker.com/storage/ 
+Page 13 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+3.12 Segment Data Processing and Storage Based on 
+Sensitivity 
+ Segment data processing and storage based on the sensitivity of the data. 
+Do not process sensitive data on enterprise assets intended for lower sensitivity 
+data. 
+ ● ● 
+v7 14 Controlled Access Based on the Need to Know 
+ Controlled Access Based on the Need to Know    
+ 
+Page 14
+
+After reasoning through the steps, Respond with ONLY a JSON object, no markdown, no explanation. Format: {"elements": [{"name": "...", "requirements": ["...", "..."]}]}
+*Prompt Type*
+chain-of-thought
+*LLM Output*
+```json
+{
+  "elements": [
+    {
+      "name": "Docker Root Directory",
+      "requirements": ["Create a separate partition (logical volume) for storing Docker files."]
+    },
+    {
+      "name": "Mount Point",
+      "requirements": ["Return whether the configured root directory is a mount point."]
+    }
+  ]
+}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+Work through these steps internally before answering:
+Step 1: Identify every file, directory, daemon, socket, or configuration setting named in the text.
+Step 2: For each one, find the sentences that state what it must, should, or must not do.
+Step 3: Discard items that are only mentioned as examples or references and impose no requirement.
+Step 4: Phrase each requirement as a short imperative statement.
+Step 5: Remove any duplicate elements.
+
+TEXT:
+Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+The Docker daemon currently requires access to the Docker socket which is, by default, 
+owned by the user root and the group docker. 
+Rationale: 
+Docker allows you to share a directory between the Docker host and a guest container 
+without limiting the access rights of the container. This means that you can start a 
+container and map the / directory on your host to the container. The container would 
+then be able to modify your host file system without any restrictions. This means that 
+you could gain elevated privileges simply by being a member of the docker group and 
+subsequently start a container which maps the root / directory on the host. 
+Impact: 
+Provided the proceeding instructions are implemented, rights to build and execute 
+containers as normal user would be restricted. 
+Audit: 
+Execute the following command on the docker host and ensure that only trusted users 
+are members of the docker group. 
+getent group docker 
+Remediation: 
+You should remove any untrusted users from the docker group. Additionally, you should 
+not create a mapping of sensitive directories from the host to container volumes. 
+Default Value: 
+Not Applicable 
+References: 
+1. https://docs.docker.com/engine/security/#docker-daemon-attack-surface 
+2. http://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-
+docker-in-centos-fedora-or-rhel/ 
+Page 15 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+6.1 Establish an Access Granting Process 
+ Establish and follow a process, preferably automated, for granting access to 
+enterprise assets upon new hire, rights grant, or role change of a user. 
+● ● ● 
+v7 4 Controlled Use of Administrative Privileges 
+ Controlled Use of Administrative Privileges    
+ 
+Page 16
+
+After reasoning through the steps, Respond with ONLY a JSON object, no markdown, no explanation. Format: {"elements": [{"name": "...", "requirements": ["...", "..."]}]}
+*Prompt Type*
+chain-of-thought
+*LLM Output*
+```json
+{
+"elements": [
+  {"name": "Docker Socket", "requirements": ["Ensure access to the Docker socket is controlled by the user and group.", "Restrict access to the Docker socket to trusted users."]},
+  {"name": "Container Mapping", "requirements": ["Prevent container mappings from granting elevated privileges.", "Do not create mappings of sensitive directories from the host to container volumes."]},
+  {"name": "User Group", "requirements": ["Only trusted users should be members of the docker group."]}
+]
+}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+A key data element (KDE) is a specific configuration item, file, or system component that the document imposes requirements on.
+
+Identify the key data elements in the text below and list the requirements stated for each. List each element at most once.
+
+TEXT:
+Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+All Docker containers and their data and metadata is stored under /var/lib/docker 
+directory. By default, /var/lib/docker should be mounted under either the / or /var 
+partitions dependent on how the Linux operating system in use is configured. 
+Rationale: 
+Docker depends on /var/lib/docker as the default directory where all Docker related 
+files, including the images, are stored. This directory could fill up quickly causing both 
+Docker and the host to become unusable. For this reason, you should create a separate 
+partition (logical volume) for storing Docker files. 
+Impact: 
+None. 
+Audit: 
+At the Docker host execute one of the below commands: 
+grep '/var/lib/docker\s' /proc/mounts 
+This should return the partition details for the /var/lib/docker mountpoint. 
+mountpoint -- "$(docker info -f '{{ .Docker Root Dir }}')" 
+This should return whether the configured root directory is a mount point. 
+Remediation: 
+For new installations, you should create a separate partition for the /var/lib/docker 
+mount point. For systems which have already been installed, you should use the Logical 
+Volume Manager (LVM) within Linux to create a new partition. 
+Default Value: 
+By default, /var/lib/docker is mounted under the / or /var partitions dependent on 
+how the OS is configured. 
+References: 
+1. https://www.projectatomic.io/docs/docker-storage-recommendation/ 
+2. https://docs.docker.com/storage/ 
+Page 16 
+Internal Only - General 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+3.12 Segment Data Processing and Storage Based on 
+Sensitivity 
+ Segment data processing and storage based on the sensitivity of the data. 
+Do not process sensitive data on enterprise assets intended for lower sensitivity 
+data. 
+ ● ● 
+v7 14 Controlled Access Based on the Need to Know 
+ Controlled Access Based on the Need to Know    
+ 
+Page 17 
+Internal Only - General
+
+Respond with ONLY a JSON object, no markdown, no explanation. Format: {"elements": [{"name": "...", "requirements": ["...", "..."]}]}
+*Prompt Type*
+zero-shot
+*LLM Output*
+```json
+{
+"elements": [
+{"name": "Docker Root Dir", "requirements": ["Create a separate partition for the /var/lib/docker mount point"]},
+{"name": "Linux Operating System Configuration", "requirements": ["Mount /var/lib/docker under / or /var partitions depending on the Linux OS"]}
+]
+}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+A key data element (KDE) is a specific configuration item, file, or system component that the document imposes requirements on.
+
+Identify the key data elements in the text below and list the requirements stated for each. List each element at most once.
+
+TEXT:
+Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+The Docker daemon currently requires access to the Docker socket which is, by default, 
+owned by the user root and the group docker. 
+Rationale: 
+Docker allows you to share a directory between the Docker host and a guest container 
+without limiting the access rights of the container. This means that you can start a 
+container and map the / directory on your host to the container. The container would 
+then be able to modify your host file system without any restrictions. This means that 
+you could gain elevated privileges simply by being a member of the docker group and 
+subsequently start a container which maps the root / directory on the host. 
+Impact: 
+Provided the proceeding instructions are implemented, rights to build and execute 
+containers as normal user would be restricted. 
+Audit: 
+Execute the following command on the docker host and ensure that only trusted users 
+are members of the docker group. 
+getent group docker 
+Remediation: 
+You should remove any untrusted users from the docker group. Additionally, you 
+should not create a mapping of sensitive directories from the host to container volumes. 
+Default Value: 
+Not Applicable 
+References: 
+1. https://docs.docker.com/engine/security/#docker-daemon-attack-surface 
+2. http://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-
+docker-in-centos-fedora-or-rhel/ 
+Page 18 
+Internal Only - General 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+6.1 Establish an Access Granting Process 
+ Establish and follow a process, preferably automated, for granting access to 
+enterprise assets upon new hire, rights grant, or role change of a user. 
+● ● ● 
+v7 4 Controlled Use of Administrative Privileges 
+ Controlled Use of Administrative Privileges    
+ 
+Page 19 
+Internal Only - General
+
+Respond with ONLY a JSON object, no markdown, no explanation. Format: {"elements": [{"name": "...", "requirements": ["...", "..."]}]}
+*Prompt Type*
+zero-shot
+*LLM Output*
+```json
+{"elements": [{"name": "Level 1 - Docker - Linux", "requirements": ["Access to Docker socket owned by root and docker group"]}, {"name": "Mapping of / directory", "requirements":["Map / directory on host to container"]}, {"name": "Elevation via Docker Group", "requirements":["Gain elevated privileges through Docker group membership"]}]}"}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+Identify key data elements (KDEs) and their requirements.
+List each element at most once. Emit at most six elements.
+
+EXAMPLE 1
+TEXT: Ensure a separate partition for containers has been created. The /var/lib/docker directory should be mounted on a dedicated partition to avoid filling the host filesystem.
+OUTPUT: {"elements": [{"name": "/var/lib/docker", "requirements": ["Must be mounted on a dedicated partition", "Must not share space with the host filesystem"]}]}
+
+EXAMPLE 2
+TEXT: Ensure the Docker daemon is not run as root where possible. Rootless mode should be enabled. The daemon socket must not be exposed over TCP without TLS.
+OUTPUT: {"elements": [{"name": "Docker daemon", "requirements": ["Should run in rootless mode", "Must not expose the socket over TCP without TLS"]}]}
+
+NOW ANALYZE
+TEXT: Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+All Docker containers and their data and metadata is stored under /var/lib/docker 
+directory. By default, /var/lib/docker should be mounted under either the / or /var 
+partitions dependent on how the Linux operating system in use is configured. 
+Rationale: 
+Docker depends on /var/lib/docker as the default directory where all Docker related 
+files, including the images, are stored. This directory could fill up quickly causing both 
+Docker and the host to become unusable. For this reason, you should create a separate 
+partition (logical volume) for storing Docker files. 
+Impact: 
+None. 
+Audit: 
+At the Docker host execute one of the below commands: 
+grep '/var/lib/docker\s' /proc/mounts 
+This should return the partition details for the /var/lib/docker mountpoint. 
+mountpoint -- "$(docker info -f '{{ .Docker Root Dir }}')" 
+This should return whether the configured root directory is a mount point. 
+Remediation: 
+For new installations, you should create a separate partition for the /var/lib/docker 
+mount point. For systems which have already been installed, you should use the Logical 
+Volume Manager (LVM) within Linux to create a new partition. 
+Default Value: 
+By default, /var/lib/docker is mounted under the / or /var partitions dependent on 
+how the OS is configured. 
+References: 
+1. https://www.projectatomic.io/docs/docker-storage-recommendation/ 
+2. https://docs.docker.com/storage/ 
+Page 16 
+Internal Only - General 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+3.12 Segment Data Processing and Storage Based on 
+Sensitivity 
+ Segment data processing and storage based on the sensitivity of the data. 
+Do not process sensitive data on enterprise assets intended for lower sensitivity 
+data. 
+ ● ● 
+v7 14 Controlled Access Based on the Need to Know 
+ Controlled Access Based on the Need to Know    
+ 
+Page 17 
+Internal Only - General
+OUTPUT: 
+*Prompt Type*
+few-shot
+*LLM Output*
+```json
+{"elements": [{"name": "Docker Root Dir", "requirements": ["The Docker Root Directory"], "value": "/var/lib/docker"}]}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+Identify key data elements (KDEs) and their requirements.
+List each element at most once. Emit at most six elements.
+
+EXAMPLE 1
+TEXT: Ensure a separate partition for containers has been created. The /var/lib/docker directory should be mounted on a dedicated partition to avoid filling the host filesystem.
+OUTPUT: {"elements": [{"name": "/var/lib/docker", "requirements": ["Must be mounted on a dedicated partition", "Must not share space with the host filesystem"]}]}
+
+EXAMPLE 2
+TEXT: Ensure the Docker daemon is not run as root where possible. Rootless mode should be enabled. The daemon socket must not be exposed over TCP without TLS.
+OUTPUT: {"elements": [{"name": "Docker daemon", "requirements": ["Should run in rootless mode", "Must not expose the socket over TCP without TLS"]}]}
+
+NOW ANALYZE
+TEXT: Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+The Docker daemon currently requires access to the Docker socket which is, by default, 
+owned by the user root and the group docker. 
+Rationale: 
+Docker allows you to share a directory between the Docker host and a guest container 
+without limiting the access rights of the container. This means that you can start a 
+container and map the / directory on your host to the container. The container would 
+then be able to modify your host file system without any restrictions. This means that 
+you could gain elevated privileges simply by being a member of the docker group and 
+subsequently start a container which maps the root / directory on the host. 
+Impact: 
+Provided the proceeding instructions are implemented, rights to build and execute 
+containers as normal user would be restricted. 
+Audit: 
+Execute the following command on the docker host and ensure that only trusted users 
+are members of the docker group. 
+getent group docker 
+Remediation: 
+You should remove any untrusted users from the docker group. Additionally, you 
+should not create a mapping of sensitive directories from the host to container volumes. 
+Default Value: 
+Not Applicable 
+References: 
+1. https://docs.docker.com/engine/security/#docker-daemon-attack-surface 
+2. http://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-
+docker-in-centos-fedora-or-rhel/ 
+Page 18 
+Internal Only - General 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+6.1 Establish an Access Granting Process 
+ Establish and follow a process, preferably automated, for granting access to 
+enterprise assets upon new hire, rights grant, or role change of a user. 
+● ● ● 
+v7 4 Controlled Use of Administrative Privileges 
+ Controlled Use of Administrative Privileges    
+ 
+Page 19 
+Internal Only - General
+OUTPUT: 
+*Prompt Type*
+few-shot
+*LLM Output*
+```json
+{"elements": [{"name": "Docker daemon", "requirements": ["Requires access to the Docker socket"], "description": "Docker allows sharing a directory between the Docker host and a guest container without limiting the access rights of the container."}, "impact": "Restricts standard user access to building and executing containers."]}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+Work through these steps internally before answering:
+Step 1: Identify every file, directory, daemon, socket, or configuration setting named in the text.
+Step 2: For each one, find the sentences that state what it must, should, or must not do.
+Step 3: Discard items that are only mentioned as examples or references and impose no requirement.
+Step 4: Phrase each requirement as a short imperative statement.
+Step 5: Remove any duplicate elements.
+
+TEXT:
+Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+All Docker containers and their data and metadata is stored under /var/lib/docker 
+directory. By default, /var/lib/docker should be mounted under either the / or /var 
+partitions dependent on how the Linux operating system in use is configured. 
+Rationale: 
+Docker depends on /var/lib/docker as the default directory where all Docker related 
+files, including the images, are stored. This directory could fill up quickly causing both 
+Docker and the host to become unusable. For this reason, you should create a separate 
+partition (logical volume) for storing Docker files. 
+Impact: 
+None. 
+Audit: 
+At the Docker host execute one of the below commands: 
+grep '/var/lib/docker\s' /proc/mounts 
+This should return the partition details for the /var/lib/docker mountpoint. 
+mountpoint -- "$(docker info -f '{{ .Docker Root Dir }}')" 
+This should return whether the configured root directory is a mount point. 
+Remediation: 
+For new installations, you should create a separate partition for the /var/lib/docker 
+mount point. For systems which have already been installed, you should use the Logical 
+Volume Manager (LVM) within Linux to create a new partition. 
+Default Value: 
+By default, /var/lib/docker is mounted under the / or /var partitions dependent on 
+how the OS is configured. 
+References: 
+1. https://www.projectatomic.io/docs/docker-storage-recommendation/ 
+2. https://docs.docker.com/storage/ 
+Page 16 
+Internal Only - General 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+3.12 Segment Data Processing and Storage Based on 
+Sensitivity 
+ Segment data processing and storage based on the sensitivity of the data. 
+Do not process sensitive data on enterprise assets intended for lower sensitivity 
+data. 
+ ● ● 
+v7 14 Controlled Access Based on the Need to Know 
+ Controlled Access Based on the Need to Know    
+ 
+Page 17 
+Internal Only - General
+
+After reasoning through the steps, Respond with ONLY a JSON object, no markdown, no explanation. Format: {"elements": [{"name": "...", "requirements": ["...", "..."]}]}
+*Prompt Type*
+chain-of-thought
+*LLM Output*
+```json
+{
+"elements": [
+  {"name": "Docker Root Directory", "requirements": ["Create a separate partition for storing Docker files."]},
+  {"name": "Mount Point", "requirements": ["Return whether the configured root directory is a mount point."]},
+  {"name": "Docker Version", "requirements": ["Use v8 3.12 Segment Data Processing and Storage Based on Sensitivity"]},
+  {"name": "Segment Data Processing", "requirements": ["Do not process sensitive data on enterprise assets intended for lower sensitivity data."]}
+]
+}
+```
+
+*LLM Name*
+google/gemma-3-1b-it
+*Prompt Used*
+You are analyzing a security requirements document.
+Work through these steps internally before answering:
+Step 1: Identify every file, directory, daemon, socket, or configuration setting named in the text.
+Step 2: For each one, find the sentences that state what it must, should, or must not do.
+Step 3: Discard items that are only mentioned as examples or references and impose no requirement.
+Step 4: Phrase each requirement as a short imperative statement.
+Step 5: Remove any duplicate elements.
+
+TEXT:
+Profile Applicability: 
+•  Level 1 - Docker - Linux 
+Description: 
+The Docker daemon currently requires access to the Docker socket which is, by default, 
+owned by the user root and the group docker. 
+Rationale: 
+Docker allows you to share a directory between the Docker host and a guest container 
+without limiting the access rights of the container. This means that you can start a 
+container and map the / directory on your host to the container. The container would 
+then be able to modify your host file system without any restrictions. This means that 
+you could gain elevated privileges simply by being a member of the docker group and 
+subsequently start a container which maps the root / directory on the host. 
+Impact: 
+Provided the proceeding instructions are implemented, rights to build and execute 
+containers as normal user would be restricted. 
+Audit: 
+Execute the following command on the docker host and ensure that only trusted users 
+are members of the docker group. 
+getent group docker 
+Remediation: 
+You should remove any untrusted users from the docker group. Additionally, you 
+should not create a mapping of sensitive directories from the host to container volumes. 
+Default Value: 
+Not Applicable 
+References: 
+1. https://docs.docker.com/engine/security/#docker-daemon-attack-surface 
+2. http://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-
+docker-in-centos-fedora-or-rhel/ 
+Page 18 
+Internal Only - General 
+CIS Controls: 
+Controls 
+Version Control IG 1 IG 2 IG 3 
+v8 
+6.1 Establish an Access Granting Process 
+ Establish and follow a process, preferably automated, for granting access to 
+enterprise assets upon new hire, rights grant, or role change of a user. 
+● ● ● 
+v7 4 Controlled Use of Administrative Privileges 
+ Controlled Use of Administrative Privileges    
+ 
+Page 19 
+Internal Only - General
+
+After reasoning through the steps, Respond with ONLY a JSON object, no markdown, no explanation. Format: {"elements": [{"name": "...", "requirements": ["...", "..."]}]}
+*Prompt Type*
+chain-of-thought
+*LLM Output*
+```json
+{
+  "elements": [
+    {"name": "Docker Socket", "requirements": ["Ensure access to the Docker socket is controlled by the user and group.", "Restrict access to the Docker socket to trusted users."]},
+    {"name": "Container Mapping", "requirements": ["Prevent container mappings of host directories to container volumes.", "Do not create mappings of sensitive directories from the host to container volumes."]},
+    {"name": "User Permissions", "requirements": ["Remove any untrusted users from the docker group.", "Do not allow non-root users to run Docker commands."]}
+  ]
+}
+```
+
