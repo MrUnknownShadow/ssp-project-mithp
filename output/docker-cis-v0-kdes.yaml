@@ -1,5 +1,2252 @@
 elements:
-- name: Docker Root Dir
+- name: Docker Root Directory
   requirements:
-  - The Docker Root Directory
+  - Create a separate partition for the /var/lib/docker mount point.
   section: 1.1.1
+- name: Mount Point
+  requirements:
+  - Return whether the configured root directory is a mount point.
+  section: 1.1.1
+- name: Docker Version
+  requirements:
+  - By default, /var/lib/docker is mounted under the / or /var partitions dependent
+    on how the OS is configured.
+  section: 1.1.1
+- name: Segment Data Processing
+  requirements:
+  - Do not process sensitive data on enterprise assets intended for lower sensitivity
+    data.
+  section: 1.1.1
+- name: Docker Socket
+  requirements:
+  - Ensure access to the Docker socket is controlled by the user and group.
+  - Restrict access to the Docker socket to trusted users.
+  section: 1.1.2
+- name: Container Mapping
+  requirements:
+  - Prevent container mappings from granting elevated privileges via the Docker host's
+    root directory.
+  - Do not allow mapping of sensitive directories from the host to container volumes.
+  section: 1.1.2
+- name: User Group
+  requirements:
+  - Only trusted users should be members of the docker group.
+  section: 1.1.2
+- name: Access Granting Process
+  requirements:
+  - Establish an Automated Access Granting Process for enterprise assets.
+  section: 1.1.2
+- name: Audit Docker Daemon Activities
+  requirements:
+  - Audit all Docker daemon activities.
+  - Ensure that logging, per the enterprise's audit log management process, has been
+    enabled across enterprise assets.
+  section: 1.1.3
+- name: Rotate and Archive Audit Logs
+  requirements:
+  - Ensure that these are rotated and archived periodically.
+  - Create a separate partition for audit logs to avoid filling up any other critical
+    partitions.
+  section: 1.1.3
+- name: Verify Audit Rules
+  requirements:
+  - Verify that there are audit rules for the Docker daemon.
+  - 'Execute the following command: auditctl -l | grep /usr/bin/dockerd This should
+    show the rules associated with the Docker daemon.'
+  section: 1.1.3
+- name: Add Audit Rule (Docker Daemon)
+  requirements:
+  - 'Add the line below to the /etc/audit/rules.d/audit.rules file: -w /usr/bin/dockerd
+    -k docker'
+  section: 1.1.3
+- name: Restart Audit Daemon
+  requirements:
+  - 'Restart the audit daemon using the following command: systemctl restart auditd'
+  section: 1.1.3
+- name: Audit /run/containerd
+  requirements:
+  - Verify an audit rule exists
+  section: 1.1.4
+- name: Rotate and archive audit logs
+  requirements:
+  - Ensure rotation and archiving of audit logs
+  section: 1.1.4
+- name: Create a dedicated audit log partition
+  requirements:
+  - Create a partition for audit logs
+  section: 1.1.4
+- name: Implement audit rule verification via `auditctl`
+  requirements:
+  - Execute `auditctl -l | grep /run/containerd`
+  section: 1.1.4
+- name: Enforce detail logging for sensitive data
+  requirements:
+  - Configure detailed audit logging
+  section: 1.1.4
+- name: Audit /var/lib/docker
+  requirements:
+  - Verify an audit rule exists
+  section: 1.1.5
+- name: Rotate and archive audit logs
+  requirements:
+  - Ensure rotation and archiving of audit logs
+  section: 1.1.5
+- name: Create a dedicated audit log partition
+  requirements:
+  - Create a separate partition for audit logs
+  section: 1.1.5
+- name: Implement audit rule verification via `auditctl`
+  requirements:
+  - Execute `auditctl -l | grep /var/lib/docker`
+  section: 1.1.5
+- name: Enforce detail logging for sensitive data
+  requirements:
+  - Configure detailed audit logging for enterprise assets containing sensitive data
+  section: 1.1.5
+- name: Audit /etc/docker
+  requirements:
+  - Verify an audit rule exists
+  section: 1.1.6
+- name: Audit /etc/docker/directory
+  requirements:
+  - Audit rule applies
+  section: 1.1.6
+- name: Rotate and archive audit logs
+  requirements:
+  - Rotate and archive audit logs regularly
+  section: 1.1.6
+- name: Create a dedicated audit log partition
+  requirements:
+  - Create a separate partition for audit logs
+  section: 1.1.6
+- name: Implement auditctl -l | grep /etc/docker
+  requirements:
+  - Execute command to verify audit rule
+  section: 1.1.6
+- name: Enforce detail logging for sensitive data
+  requirements:
+  - Configure detailed audit logging
+  section: 1.1.6
+- name: docker.service
+  requirements:
+  - Audit the docker.service if applicable.
+  - Ensure that these are rotated and archived periodically.
+  section: 1.1.7
+- name: auditctl
+  requirements:
+  - 'Execute the command below: auditctl -l | grep docker.service'
+  section: 1.1.7
+- name: auditd
+  requirements:
+  - Restart the audit daemon.
+  section: 1.1.7
+- name: file docker.service
+  requirements:
+  - 'The file exists. Verify there is an audit rule corresponding to the file: For
+    example, you could execute the command below: auditctl -l | grep docker.service'
+  section: 1.1.7
+- name: file location
+  requirements:
+  - grep 'containerd.sock' /etc/containerd/config.toml
+  section: 1.1.8
+- name: file existence
+  requirements:
+  - if the file does not exist, this recommendation is not applicable
+  section: 1.1.8
+- name: audit rule
+  requirements:
+  - 'execute the command below: auditctl -l | grep containerd.sock'
+  section: 1.1.8
+- name: rule addition
+  requirements:
+  - 'Add the line below to the /etc/audit/audit.rules file: -w /run/containerd/containerd.sock
+    -k docker'
+  section: 1.1.8
+- name: daemon restart
+  requirements:
+  - restart the audit daemon
+  section: 1.1.8
+- name: default value
+  requirements:
+  - By default, Docker related files and directories are not audited.
+  section: 1.1.8
+- name: Configuration File Location
+  requirements:
+  - systemctl show -p Fragment Path docker.socket
+  section: 1.1.9
+- name: Socket File Location
+  requirements:
+  - grep Listen Stream <Fragment Path from previous step>
+  section: 1.1.9
+- name: Audit Rule Existence
+  requirements:
+  - 'If the file does not exist, this recommendation is not applicable. If the file
+    exists, you should verify that there is an audit rule corresponding to the file:
+    auditctl -l | grep docker.socket'
+  section: 1.1.9
+- name: Audit Rule Execution
+  requirements:
+  - 'Add the line below to the /etc/audit/audit.rules file: -w /var/run/docker.sock
+    -k docker'
+  section: 1.1.9
+- name: Audit Daemon Restart
+  requirements:
+  - restart the audit daemon
+  section: 1.1.9
+- name: Default Value
+  requirements:
+  - By default, Docker related files and directories are not audited. The file docker.socket
+    may not be present, but if it is, it should be audited.
+  section: 1.1.9
+- name: Audit /etc/default/docker
+  requirements:
+  - Verify an audit rule exists
+  section: 1.1.10
+- name: Auditctl -l | grep /etc/default/docker
+  requirements:
+  - Execute the command to check for an audit rule
+  section: 1.1.10
+- name: 'Add the line below to the /etc/audit/audit.rules file:'
+  requirements:
+  - Add a rule for /etc/default/docker
+  section: 1.1.10
+- name: Restart the audit daemon.
+  requirements:
+  - Restart the audit daemon
+  section: 1.1.10
+- name: Docker Daemon
+  requirements:
+  - Audit /etc/docker/daemon.json
+  section: 1.1.11
+- name: Daemon Configuration File
+  requirements:
+  - Ensure an audit rule exists for /etc/docker/daemon.json
+  section: 1.1.11
+- name: Audit Command
+  requirements:
+  - Execute 'auditctl -l | grep /etc/docker/daemon.json'
+  section: 1.1.11
+- name: Audit Daemon Restart
+  requirements:
+  - Restart the audit daemon
+  section: 1.1.11
+- name: Docker Daemon
+  requirements:
+  - Audit /etc/containerd/config.toml
+  section: 1.1.12
+- name: Audit Rule
+  requirements:
+  - Verify an audit rule exists relating to /etc/containerd/config.toml
+  section: 1.1.12
+- name: Audit Command
+  requirements:
+  - execute 'auditctl -l | grep /etc/containerd/config.toml'
+  section: 1.1.12
+- name: Configuration Setting
+  requirements:
+  - Add a rule for /etc/audit/audit.rules file
+  section: 1.1.12
+- name: System Service Restart
+  requirements:
+  - Restart the audit daemon
+  section: 1.1.12
+- name: Docker Daemon
+  requirements:
+  - Audit /etc/sysconfig/docker
+  section: 1.1.13
+- name: Audit Rule
+  requirements:
+  - Verify an audit rule exists relating to /etc/sysconfig/docker file
+  section: 1.1.13
+- name: Audit Command
+  requirements:
+  - execute auditctl -l | grep /etc/sysconfig/docker
+  section: 1.1.13
+- name: Audit Log Configuration
+  requirements:
+  - Add a rule for /etc/sysconfig/docker file
+  section: 1.1.13
+- name: Audit Daemon Restart
+  requirements:
+  - Restart the audit daemon
+  section: 1.1.13
+- name: System Service Restart
+  requirements:
+  - Restart the auditd service
+  section: 1.1.13
+- name: Default State
+  requirements:
+  - By default, Docker related files and directories are not audited
+  section: 1.1.13
+- name: Docker Daemon
+  requirements:
+  - Audit /usr/bin/containerd
+  section: 1.1.14
+- name: Containerd Files
+  requirements:
+  - Audit all 6 files and directories
+  section: 1.1.14
+- name: Audit Rule
+  requirements:
+  - Execute auditctl -l | grep /usr/bin/containerd
+  section: 1.1.14
+- name: Audit Log Configuration
+  requirements:
+  - Add a rule for /usr/bin/containerd
+  section: 1.1.14
+- name: Audit Daemon Restart
+  requirements:
+  - Restart the audit daemon
+  section: 1.1.14
+- name: Audit /usr/bin/containerd-shim
+  requirements:
+  - Verify an audit rule exists for /usr/bin/containerd-shim
+  section: 1.1.15
+- name: Rotate and archive audit logs
+  requirements:
+  - Ensure rotation and archiving of audit logs
+  section: 1.1.15
+- name: Create a dedicated audit log partition
+  requirements:
+  - Create a separate partition for audit logs
+  section: 1.1.15
+- name: Add a rule for /usr/bin/containerd-shim
+  requirements:
+  - Add a rule for /usr/bin/containerd-shim file
+  section: 1.1.15
+- name: Restart audit daemon
+  requirements:
+  - Restart the audit daemon
+  section: 1.1.15
+- name: Dockerfile
+  requirements:
+  - Audit /usr/bin/containerd-shim-runc-v1
+  section: 1.1.16
+- name: /usr/bin/containerd-shim-runc-v1
+  requirements:
+  - Audit /usr/bin/containerd-shim-runc-v1
+  section: 1.1.16
+- name: auditctl
+  requirements:
+  - Ensure an audit rule exists for /usr/bin/containerd-shim-runc-v1
+  section: 1.1.16
+- name: audit.rules
+  requirements:
+  - Add the line -w /usr/bin/containerd-shim-runc-v1 -k docker to /etc/audit/audit.rules
+  section: 1.1.16
+- name: auditd
+  requirements:
+  - Restart the audit daemon after adding the rule
+  section: 1.1.16
+- name: Dockerfile
+  requirements:
+  - Ensure containerd-shim-runc-v2 is audited
+  section: 1.1.17
+- name: Audit Log Rotation Policy
+  requirements:
+  - Implement rotation and archiving of audit logs
+  section: 1.1.17
+- name: Audit Rule Definition
+  requirements:
+  - Define an audit rule for /usr/bin/containerd-shim-runc-v2
+  section: 1.1.17
+- name: Audit Daemon Restart
+  requirements:
+  - Restart the audit daemon after adding the rule
+  section: 1.1.17
+- name: Containerd Shim Runc v2 File Existence Check
+  requirements:
+  - Verify existence of /usr/bin/containerd-shim-runc-v2 file
+  section: 1.1.17
+- name: Security Controls - Version Control
+  requirements:
+  - Collect Detailed Audit Logs
+  section: 1.1.17
+- name: Security Controls - Access/Change Sensitive Data
+  requirements:
+  - Enforce Detail Logging for Access or Changes to Sensitive Data
+  section: 1.1.17
+- name: Audit /usr/bin/runc
+  requirements:
+  - Verify an audit rule exists for /usr/bin/runc
+  section: 1.1.18
+- name: Execute auditctl -l | grep /usr/bin/runc
+  requirements:
+  - Validate the existence of an audit rule for /usr/bin/runc
+  section: 1.1.18
+- name: Add rule for /usr/bin/runc
+  requirements:
+  - Add a rule to /etc/audit/audit.rules for /usr/bin/runc
+  section: 1.1.18
+- name: Restart audit daemon
+  requirements:
+  - Restart the audit daemon after adding the rule
+  section: 1.1.18
+- name: Keep a tab on these product updates
+  requirements:
+  - Monitor Docker updates
+  section: 1.2.2
+- name: Ensure that Docker is running at the most current release
+  requirements:
+  - Ensure Docker is running at the most current release
+  section: 1.2.2
+- name: Execute the command below to verify that the Docker version is up to date
+  requirements:
+  - Verify Docker version
+  section: 1.2.2
+- name: Monitor versions of Docker releases and make sure your software is updated
+    as required
+  requirements:
+  - Update Docker versions
+  section: 1.2.2
+- name: Choose established and proven frameworks and libraries that provide adequate
+    security
+  requirements:
+  - Use up-to-date and trusted third-party software
+  section: 1.2.2
+- name: Acquire these components from trusted sources or evaluate the software for
+    vulnerabilities before use
+  requirements:
+  - Evaluate software for vulnerabilities
+  section: 1.2.2
+- name: Docker Daemon
+  requirements:
+  - Run Docker daemon as a non-root user
+  section: '2.1'
+- name: Configuration Files
+  requirements:
+  - Ensure configuration files are located in the same user namespace as the daemon
+  section: '2.1'
+- name: Network & Resource Limitations
+  requirements:
+  - Consider network and resource limitations while running in rootless mode
+  section: '2.1'
+- name: Docker Networks
+  requirements:
+  - Restrict inter-container communication
+  section: '2.2'
+- name: Network Bridge Configuration
+  requirements:
+  - Disable inter-container communication via default network bridge
+  section: '2.2'
+- name: Container Linking
+  requirements:
+  - Explicitly define communication via container linking
+  section: '2.2'
+- name: Custom Networks
+  requirements:
+  - Define custom networks for specific communication
+  section: '2.2'
+- name: NET_RAW Capability
+  requirements:
+  - Drop NET_RAW capability for compromised containers
+  section: '2.2'
+- name: Network Port Management
+  requirements:
+  - Control network ports, protocols, and services
+  section: '2.2'
+- name: Secure Network Infrastructure
+  requirements:
+  - Implement version-controlled infrastructure as code
+  section: '2.2'
+- name: Docker daemon log level
+  requirements:
+  - set to info
+  section: '2.3'
+- name: Dockerd startup options
+  requirements:
+  - ensure --log-level is not present or set to info
+  section: '2.3'
+- name: Daemon.json
+  requirements:
+  - review for --log-level is not present or set to info
+  section: '2.3'
+- name: Log Level Configuration
+  requirements:
+  - 'include ''log-level'': ''info'''
+  section: '2.3'
+- name: Iptables Firewall
+  requirements:
+  - Allow Docker daemon to make changes to iptables rules
+  section: '2.4'
+- name: Docker Daemon Restart
+  requirements:
+  - Docker daemon service requires iptables rules to be enabled before it starts
+  section: '2.4'
+- name: Iptables Persistence
+  requirements:
+  - Add iptables-persistent to your iptables install to mitigate impact of restarts
+  section: '2.4'
+- name: Dockerd Startup Options
+  requirements:
+  - Ensure --iptables parameter is not present or not set to false
+  section: '2.4'
+- name: Daemon Configuration
+  requirements:
+  - Review /etc/docker/daemon.json for --iptables parameter
+  section: '2.4'
+- name: Network Architecture Security
+  requirements:
+  - Establish and maintain a secure network architecture
+  section: '2.4'
+- name: Least Privilege Principle
+  requirements:
+  - Address segmentation, least privilege, and availability
+  section: '2.4'
+- name: Docker
+  requirements:
+  - Assume all, but local registries are secure
+  section: '2.5'
+- name: registry
+  requirements:
+  - Use technical controls, such as application allowlisting, to ensure that only
+    authorized software can execute or be accessed
+  section: '2.5'
+- name: /etc/docker/certs.d/<registry-name>/
+  requirements:
+  - "Place a copy of registry\u2019s CA certificate on the Docker host at /etc/docker/certs.d/<registry-name>"
+  section: '2.5'
+- name: Docker
+  requirements:
+  - Do not use aufs as the storage driver for your Docker instance.
+  section: '2.6'
+- name: osas
+  requirements:
+  - Discard items that are only mentioned as examples or references
+  section: '2.6'
+- name: docker info
+  requirements:
+  - 'Execute the below command and verify that aufs is not used as storage driver:'
+  - 'docker info --format ''Storage Driver: {{ .Driver }}'''
+  section: '2.6'
+- name: Docker Daemon
+  requirements:
+  - bind to a TCP port
+  section: '2.7'
+- name: TLS Authentication
+  requirements:
+  - configure TLS authentication
+  section: '2.7'
+- name: Docker Daemon Binding
+  requirements:
+  - ensure Docker daemon binding to TCP port
+  section: '2.7'
+- name: Docker Daemon Socket
+  requirements:
+  - not bind to another IP/port
+  section: '2.7'
+- name: Docker Client Access
+  requirements:
+  - anyone with access to that port or socket can have full access to the Docker daemon
+  section: '2.7'
+- name: Docker Daemon Configuration
+  requirements:
+  - review dockerd start-up options
+  section: '2.7'
+- name: Docker Client Credentials
+  requirements:
+  - configure TLS client credentials
+  section: '2.7'
+- name: ulimit
+  requirements:
+  - set the default ulimit options
+  section: '2.8'
+- name: Docker daemon
+  requirements:
+  - enforce ulimit for all container instances
+  section: '2.8'
+- name: container runtime
+  requirements:
+  - override ulimit during container runtime
+  section: '2.8'
+- name: default ulimit
+  requirements:
+  - define a default ulimit
+  section: '2.8'
+- name: Dockerd
+  requirements:
+  - review dockerd start-up options
+  section: '2.8'
+- name: dockerd startup options
+  requirements:
+  - check --default-ulimit
+  section: '2.8'
+- name: dockerd daemon mode
+  requirements:
+  - run Docker in daemon mode
+  section: '2.8'
+- name: nproc
+  requirements:
+  - pass --default-ulimit nproc
+  section: '2.8'
+- name: nofile
+  requirements:
+  - pass --default-ulimit nofile
+  section: '2.8'
+- name: ensure /etc/subuid and /etc/subgid exist
+  requirements:
+  - touch /etc/subuid /etc/subgid
+  section: '2.9'
+- name: start docker daemon with --userns-remap flag
+  requirements:
+  - dockerd --userns-remap=default
+  section: '2.9'
+- name: Docker
+  requirements:
+  - Set the default cgroup parent to use for all containers
+  section: '2.10'
+- name: cgroup-parent
+  requirements:
+  - Not set or is set as appropriate non-default cgroup
+  section: '2.10'
+- name: Dockerd
+  requirements:
+  - Review dockerd startup options and settings in /etc/docker/daemon.json
+  section: '2.10'
+- name: dockerd --cgroup-parent
+  requirements:
+  - Either not set or is set as appropriate non-default cgroup
+  section: '2.10'
+- name: daemon.json
+  requirements:
+  - Check contents for --cgroup-parent setting
+  section: '2.10'
+- name: Docker Base Device Size
+  requirements:
+  - Increase base device size when applicable
+  section: '2.11'
+- name: Dockerd Storage Driver Options
+  requirements:
+  - No `--storage-opt dm.basesize` parameters
+  section: '2.11'
+- name: Daemon Restart
+  requirements:
+  - Base device size can be increased upon daemon restart
+  section: '2.11'
+- name: Increased Space Allocation
+  requirements:
+  - More space will be allocated for extra images
+  section: '2.11'
+- name: Denial of Service Condition
+  requirements:
+  - Allocated partition becomes full
+  section: '2.11'
+- name: Authorization Plugin
+  requirements:
+  - Install/Create an authorization plugin.
+  section: '2.12'
+- name: Configuration Policy
+  requirements:
+  - Configure the authorization policy as desired.
+  section: '2.12'
+- name: Docker Command Passing
+  requirements:
+  - Ensure that each Docker command passes through the authorization plugin mechanism.
+  section: '2.12'
+- name: Performance Impact
+  requirements:
+  - Assess alternative mechanisms that do not have this performance hit.
+  section: '2.12'
+- name: Audit Check
+  requirements:
+  - Review dockerd start-up options and settings in /etc/docker/daemon.json.
+  section: '2.12'
+- name: Docker supports various logging mechanisms
+  requirements:
+  - Use the one that best corresponds to your IT security policy.
+  section: '2.13'
+- name: Run docker info and ensure that the Logging Driver property set as appropriate.
+  requirements:
+  - Ensure the Logging Driver property is correctly configured.
+  section: '2.13'
+- name: docker info --format '{{ .Logging Driver }}'
+  requirements:
+  - Run this command to determine the current logging driver.
+  section: '2.13'
+- name: ps -ef | grep dockerd
+  requirements:
+  - Check if the docker daemon is running and identify its PID.
+  section: '2.13'
+- name: Docker
+  requirements:
+  - Restrict containers from acquiring additional privileges via suid or sgid
+  section: '2.14'
+- name: Dockerd
+  requirements:
+  - Run Dockerd as `dockerd --no-new-privileges`
+  section: '2.14'
+- name: Linux
+  requirements:
+  - Containers are not restricted from acquiring new privileges by default
+  section: '2.14'
+- name: SELinux
+  requirements:
+  - Prevent LSMs (e.g., SELinux) from escalating privileges
+  section: '2.14'
+- name: Daemon
+  requirements:
+  - Review dockerd start-up options and check settings in /etc/docker/daemon.json
+  section: '2.14'
+- name: Docker Daemon
+  requirements:
+  - Ensure `--no-new-privileges` parameter is present and not set to false
+  section: '2.14'
+- name: Docker Daemon
+  requirements:
+  - Ensure Docker daemon is configured to enable live restore
+  section: '2.15'
+- name: Container Restart Handling
+  requirements:
+  - Prevent container restarts during shutdown or restoration
+  section: '2.15'
+- name: Daemon Mode
+  requirements:
+  - Run Docker in daemon mode
+  section: '2.15'
+- name: Docker Daemon
+  requirements:
+  - Start a userland proxy service for port forwarding
+  section: '2.16'
+- name: Hairpin NAT
+  requirements:
+  - Disable the hairpin NAT mode
+  section: '2.16'
+- name: Userland Proxy Service
+  requirements:
+  - Disable the userland proxy service
+  section: '2.16'
+- name: Dockerd Startup Options
+  requirements:
+  - Set `--userland-proxy=false`
+  section: '2.16'
+- name: Daemon.json
+  requirements:
+  - Review `/etc/docker/daemon.json` for `--userland-proxy` setting
+  section: '2.16'
+- name: Port Forwarding
+  requirements:
+  - Enable port forwarding when possible
+  section: '2.16'
+- name: Linux Kernels
+  requirements:
+  - Require userland proxy service on older Linux kernels
+  section: '2.16'
+- name: Networking
+  requirements:
+  - Consider potential impact on networking configurations
+  section: '2.16'
+- name: level 2
+  requirements:
+  - apply a custom seccomp profile
+  section: '2.17'
+- name: daemon-wide
+  requirements:
+  - use overriding Docker's default seccomp profile
+  section: '2.17'
+- name: reduce system calls
+  requirements:
+  - minimize the total kernel surface exposed to the application
+  section: '2.17'
+- name: review system calls
+  requirements:
+  - ensure each system call is reviewed
+  section: '2.17'
+- name: exercise extreme care
+  requirements:
+  - override the default settings
+  section: '2.17'
+- name: run docker info
+  requirements:
+  - check seccomp profile
+  section: '2.17'
+- name: use --seccomp-profile
+  requirements:
+  - apply your own seccomp profile
+  section: '2.17'
+- name: use --seccomp-profile flag
+  requirements:
+  - at daemon start
+  section: '2.17'
+- name: Docker
+  requirements:
+  - Do not enable experimental features in production.
+  section: '2.18'
+- name: Docker Daemon
+  requirements:
+  - Ensure the Experimental property is set to false in the Server section.
+  section: '2.18'
+- name: Docker Version
+  requirements:
+  - Run the command below and ensure the Experimental property is set to false in
+    the Server section.
+  section: '2.18'
+- name: Docker Configuration Files
+  requirements:
+  - Secure the files and directories containing sensitive parameters.
+  section: '2.18'
+- name: docker.service
+  requirements:
+  - correctly set to root
+  section: '3.1'
+- name: systemctl show -p Fragment Path docker.service
+  requirements:
+  - verify file existence
+  section: '3.1'
+- name: stat -c %U:%G /usr/lib/systemd/system/docker.service | grep -v root:root
+  requirements:
+  - verify file existence
+  section: '3.1'
+- name: docker.service
+  requirements:
+  - set permissions to 644
+  section: '3.2'
+- name: systemctl
+  requirements:
+  - show -p Fragment Path
+  section: '3.2'
+- name: docker.socket
+  requirements:
+  - correctly set to root
+  section: '3.3'
+- name: systemctl show -p Fragment Path docker.socket
+  requirements:
+  - verify file existence
+  section: '3.3'
+- name: stat -c %U:%G /usr/lib/systemd/system/docker.socket | grep -v root:root
+  requirements:
+  - verify file existence
+  section: '3.3'
+- name: chown root:root /usr/lib/systemd/system/docker.socket
+  requirements:
+  - set ownership and group ownership to root
+  section: '3.3'
+- name: File Permissions
+  requirements:
+  - verify file permissions on docker.socket are correctly set to 644 or more restrictively
+  section: '3.4'
+- name: File Existence Check
+  requirements:
+  - if the file does not exist, this recommendation is not applicable. If the file
+    exists, execute the command below, including the correct file path in order to
+    verify that the file permissions are set to 644 or more restrictively.
+  section: '3.4'
+- name: Set File Permissions
+  requirements:
+  - execute the command below, including the correct file path to set the file permissions
+    to 644
+  section: '3.4'
+- name: Default Permission Setting
+  requirements:
+  - This file may not be present on the system and in that case, this recommendation
+    is not applicable. By default, if the file is present, the permissions should
+    be set to 644 or more restrictively.
+  section: '3.4'
+- name: Directory Ownership
+  requirements:
+  - correctly set to root
+  section: '3.5'
+- name: Directory Group Ownership
+  requirements:
+  - correctly set to root
+  section: '3.5'
+- name: Permissions
+  requirements:
+  - correctly set to 755 or more restrictively
+  section: '3.6'
+- name: Directory Permissions
+  requirements:
+  - only writeable by root
+  section: '3.6'
+- name: Data Access Control Lists
+  requirements:
+  - protect all information stored on systems with file system, network share, claims,
+    application, or database specific access control lists
+  section: '3.6'
+- name: Access Control Lists Configuration
+  requirements:
+  - apply data access control lists
+  section: '3.6'
+- name: File System Permissions
+  requirements:
+  - set permissions for the directory to 755
+  section: '3.6'
+- name: Registry Certificate Files
+  requirements:
+  - individually owned and group owned by root
+  section: '3.7'
+- name: Stat Command
+  requirements:
+  - not return any value
+  section: '3.7'
+- name: Verify Registry Certificate Permissions
+  requirements:
+  - Ensure registry certificate files have 444 or stricter permissions
+  section: '3.8'
+- name: Execute Verification Command
+  requirements:
+  - Find registry certificate files and check permissions
+  section: '3.8'
+- name: Set Registry Certificate Permissions
+  requirements:
+  - Change registry certificate file permissions to 444
+  section: '3.8'
+- name: Configure Data Access Control Lists
+  requirements:
+  - Apply data access control lists to local and remote file systems, databases, and
+    applications
+  section: '3.8'
+- name: TLS CA Certificate File
+  requirements:
+  - individually owned and group owned by root
+  section: '3.9'
+- name: Stat Command
+  requirements:
+  - return no results
+  section: '3.9'
+- name: Chown Command
+  requirements:
+  - sets the individual ownership and group ownership for the TLS CA certificate file
+    to root
+  section: '3.9'
+- name: TLS CA Certificate File
+  requirements:
+  - Permissions of 444 or more restrictive
+  section: '3.10'
+- name: Docker Server
+  requirements:
+  - TLS CA certificate file permissions of 444 or more restrictive
+  section: '3.10'
+- name: File Permissions
+  requirements:
+  - Set file permissions to 444 or more restrictive
+  section: '3.10'
+- name: Stat Command
+  requirements:
+  - Execute stat -c %a <path to TLS CA certificate file>
+  section: '3.10'
+- name: chmod Command
+  requirements:
+  - Set file permissions on the TLS CA file to 444
+  section: '3.10'
+- name: Data Access Control Lists
+  requirements:
+  - Configure data access control lists based on a user's need to know
+  section: '3.10'
+- name: Docker Server Certificate File
+  requirements:
+  - Individual owner and group owned by root
+  section: '3.11'
+- name: Stat Command
+  requirements:
+  - Return no results
+  section: '3.11'
+- name: Chown Command
+  requirements:
+  - Sets the individual ownership and group ownership for the Docker server certificate
+    file to root
+  section: '3.11'
+- name: Docker Server Certificate File
+  requirements:
+  - Permissions must be 444 or more restrictive
+  section: '3.12'
+- name: Dockerfile
+  requirements: []
+  section: '3.12'
+- name: Linux
+  requirements:
+  - Level 1 - Docker - Linux
+  section: '3.12'
+- name: Stat Command
+  requirements:
+  - Execute stat -c %a <path to Docker server certificate file>
+  section: '3.12'
+- name: chmod 444
+  requirements:
+  - Set file permissions to 444
+  section: '3.12'
+- name: Data Access Control Lists
+  requirements:
+  - Configure data access control lists
+  section: '3.12'
+- name: v8
+  requirements: []
+  section: '3.12'
+- name: 3.3 Configure Data Access Control Lists
+  requirements:
+  - Configure data access control lists
+  section: '3.12'
+- name: v7
+  requirements: []
+  section: '3.12'
+- name: Docker Server Certificate Key File
+  requirements:
+  - individually owned and group owned by root
+  section: '3.13'
+- name: Stat Command
+  requirements:
+  - return no results
+  section: '3.13'
+- name: Chown Command
+  requirements:
+  - sets the individual ownership and group ownership for the Docker server certificate
+    key file to root
+  section: '3.13'
+- name: Docker Server Certificate Key File
+  requirements:
+  - Permissions of 400
+  section: '3.14'
+- name: Dockerfile Server Certificate Key File
+  requirements:
+  - Permissions of 400
+  section: '3.14'
+- name: Verify Docker Socket Ownership
+  requirements:
+  - Own Docker socket by root and docker
+  section: '3.15'
+- name: Maintain Socket Integrity
+  requirements:
+  - Ensure Docker socket is owned by root and docker
+  section: '3.15'
+- name: Prevent Non-Privileged Interaction
+  requirements:
+  - Non-privileged users cannot interact with containers
+  section: '3.15'
+- name: Restrict Group Membership
+  requirements:
+  - Docker group membership should be tightly controlled
+  section: '3.15'
+- name: Avoid Unnecessary Group Ownership
+  requirements:
+  - Don't allow other groups to own the socket
+  section: '3.15'
+- name: Docker Socket Permissions
+  requirements:
+  - Ensure Docker socket file permissions are 660 or more restrictive
+  section: '3.16'
+- name: Docker Daemon Socket Option
+  requirements:
+  - Verify Docker socket file permissions are 660 or more restrictive
+  section: '3.16'
+- name: Access Control Lists (ACL)
+  requirements:
+  - Configure data access control lists based on a user's need to know
+  section: '3.16'
+- name: Data Access Control Lists (DCL)
+  requirements:
+  - Protect all information stored on systems with file system, network share, claims,
+    application, or database specific access control lists
+  section: '3.16'
+- name: daemon.json
+  requirements:
+  - correctly set to root, if it is in use.
+  section: '3.17'
+- name: stat
+  requirements:
+  - should execute the command below to verify that the file is owned and group owned
+    by root.
+  section: '3.17'
+- name: stat -c %U:%G /etc/docker/daemon.json
+  requirements:
+  - 'should not return any results or, if there is no daemon.json file present it
+    will return: stat: cannot stat ''/etc/docker/daemon.json'': No such file or directory.'
+  section: '3.17'
+- name: chown root:root /etc/docker/daemon.json
+  requirements:
+  - sets the ownership and group ownership for the file to root.
+  section: '3.17'
+- name: Daemon.json
+  requirements:
+  - Verify file permissions are correctly set to 644 or more
+  section: '3.18'
+- name: stat -c %a /etc/docker/daemon.json
+  requirements:
+  - Check if the file exists and is accessible
+  section: '3.18'
+- name: chmod 644 /etc/docker/daemon.json
+  requirements:
+  - Set file permissions to 644
+  section: '3.18'
+- name: File Ownership
+  requirements:
+  - correctly set to root
+  section: '3.19'
+- name: File Group Ownership
+  requirements:
+  - correctly set to root
+  section: '3.19'
+- name: File Permissions
+  requirements:
+  - correctly set to 644
+  section: '3.20'
+- name: Docker File
+  requirements:
+  - writeable only by root
+  section: '3.20'
+- name: Data Access Control Lists
+  requirements:
+  - protect all information stored on systems with file system, network share, claims,
+    application, or database specific access control lists
+  section: '3.20'
+- name: Access Control Lists
+  requirements:
+  - apply data access control lists
+  section: '3.20'
+- name: Configuration Setting
+  requirements:
+  - this file may not be present
+  section: '3.20'
+- name: Docker File Permissions
+  requirements:
+  - correctly set to 644 or restrictively
+  section: '3.21'
+- name: Sysconfig Docker File
+  requirements:
+  - writeable only by root
+  section: '3.21'
+- name: Data Access Control Lists
+  requirements:
+  - based on a user's need to know
+  section: '3.21'
+- name: File Permissions
+  requirements:
+  - '644'
+  section: '3.21'
+- name: file
+  requirements:
+  - verify that the /etc/sysconfig/docker file individual ownership and group ownership
+    is correctly set to root.
+  section: '3.22'
+- name: Containerd Socket Ownership
+  requirements:
+  - Root:root
+  section: '3.23'
+- name: Socket Owner Permissions
+  requirements:
+  - Root:root
+  section: '3.23'
+- name: Unauthorized Access Prevention
+  requirements:
+  - No other user or process can interact with Containerd daemon
+  section: '3.23'
+- name: Non-Privileged User Interaction
+  requirements:
+  - Non-privileged users can interact with containers
+  section: '3.23'
+- name: Default Socket Ownership
+  requirements:
+  - Default ownership is Root:root
+  section: '3.23'
+- name: Containerd Socket Permissions
+  requirements:
+  - 660 or stricter permissions
+  section: '3.24'
+- name: Docker Socket Permissions
+  requirements:
+  - 660 or stricter permissions
+  section: '3.24'
+- name: Data Access Control Lists (ACL)
+  requirements:
+  - Ensure authorization based on need
+  section: '3.24'
+- name: Base Image & Build Files
+  requirements:
+  - Proper base images and build files
+  section: '3.24'
+- name: Configuration Settings
+  requirements:
+  - Verify configurations
+  section: '3.24'
+- name: Stat Command
+  requirements:
+  - Verify permissions
+  section: '3.24'
+- name: Docker
+  requirements:
+  - Run as a non-root user
+  section: '4.1'
+- name: gosu
+  requirements:
+  - Use as part of the CMD or ENTRYPOINT
+  section: '4.1'
+- name: UID
+  requirements:
+  - Effective UID for each container
+  section: '4.1'
+- name: useradd
+  requirements:
+  - Add a specific user before the USER
+  section: '4.1'
+- name: Dockerfile
+  requirements:
+  - Contain information about the user's name or ID
+  section: '4.1'
+- name: subprocess
+  requirements:
+  - Run 'docker ps --quiet | xargs --max-args=1 -I{} docker exec {} cat /proc/1/status
+    | grep '^Uid:' | awk '{print $3}'
+  section: '4.1'
+- name: Container Images
+  requirements:
+  - Use either written from scratch or based on trusted bases images.
+  - Review origins and contents with security policy.
+  section: '4.2'
+- name: Docker Images
+  requirements:
+  - Ensure images are sourced from trusted channels.
+  - Scan for vulnerabilities regularly.
+  section: '4.2'
+- name: Docker
+  requirements:
+  - Small footprint
+  section: '4.3'
+- name: Containers
+  requirements:
+  - No unnecessary software packages
+  section: '4.3'
+- name: rpm
+  requirements:
+  - Install only required packages
+  section: '4.3'
+- name: docker ps
+  requirements:
+  - Run instances to check installed packages
+  section: '4.3'
+- name: CentOS, Debian, Red Hat
+  requirements:
+  - Avoid standard images
+  section: '4.3'
+- name: BusyBox
+  requirements:
+  - Use minimal base image
+  section: '4.3'
+- name: Alpine
+  requirements:
+  - Use minimal base image
+  section: '4.3'
+- name: file sharing service
+  requirements:
+  - Uninstall unnecessary services
+  section: '4.3'
+- name: web application module
+  requirements:
+  - Uninstall unnecessary services
+  section: '4.3'
+- name: service function
+  requirements:
+  - Uninstall unnecessary services
+  section: '4.3'
+- name: Docker
+  requirements:
+  - Image scans frequently
+  section: '4.4'
+- name: Linux
+  requirements:
+  - Images rebuilt
+  section: '4.4'
+- name: Vulnerabilities
+  requirements:
+  - Loopholes or bugs
+  section: '4.4'
+- name: Patches
+  requirements:
+  - Update systems
+  section: '4.4'
+- name: Security Policies
+  requirements:
+  - Evaluate before applying
+  section: '4.4'
+- name: Container Instances
+  requirements:
+  - Run commands to check for availability
+  section: '4.4'
+- name: Containers
+  requirements:
+  - Re-build images
+  section: '4.4'
+- name: Base Images
+  requirements:
+  - Latest version
+  section: '4.4'
+- name: Operating System Patch Level
+  requirements:
+  - Appropriate level
+  section: '4.4'
+- name: Automated Vulnerability Scans
+  requirements:
+  - Scan all images
+  section: '4.4'
+- name: SCAP-Compliant Scanning Tool
+  requirements:
+  - Use a tool
+  section: '4.4'
+- name: Software Support
+  requirements:
+  - Verify software support
+  section: '4.4'
+- name: Quarterly Scan
+  requirements:
+  - Perform quarterly scans
+  section: '4.4'
+- name: Docker
+  requirements:
+  - Enable Content Trust
+  section: '4.5'
+- name: Content Trust
+  requirements:
+  - Follow trust procedures while working with tagged images
+  section: '4.5'
+- name: DOCKER_CONTENT_TRUST
+  requirements:
+  - Return value of 1 when echoed
+  section: '4.5'
+- name: Build
+  requirements:
+  - Use --disable-content-trust flag
+  section: '4.5'
+- name: Create
+  requirements:
+  - Use --disable-content-trust flag
+  section: '4.5'
+- name: Pull
+  requirements:
+  - Use --disable-content-trust flag
+  section: '4.5'
+- name: Push
+  requirements:
+  - Use --disable-content-trust flag
+  section: '4.5'
+- name: Run
+  requirements:
+  - Use --disable-content-trust flag
+  section: '4.5'
+- name: Audit
+  requirements:
+  - Execute echo $DOCKER_CONTENT_TRUST
+  section: '4.5'
+- name: Environment Variable
+  requirements:
+  - Set DOCKER_CONTENT_TRUST=1
+  section: '4.5'
+- name: HEALTHCHECK
+  requirements:
+  - Ensure that Docker engine periodically checks the running container instances
+    against that instruction to ensure that containers are still operational.
+  section: '4.6'
+- name: docker inspect
+  requirements:
+  - Run the command below to ensure that Docker images have the appropriate HEALTHCHECK
+    instruction configured.
+  section: '4.6'
+- name: Docker
+  requirements:
+  - Do not use OS package manager update instructions such as apt-get update 2
+  section: '4.7'
+- name: Dockerfile
+  requirements:
+  - Use update instructions together with install instructions and version pinning
+    for packages while installing them
+  section: '4.7'
+- name: Docker Images
+  requirements:
+  - Avoid adding update instructions in a single line on the Dockerfile
+  section: '4.7'
+- name: Docker History
+  requirements:
+  - Run the command below to get the list of images
+  section: '4.7'
+- name: Docker Images
+  requirements:
+  - Removing setuid and setgid permissions
+  section: '4.8'
+- name: Linux Containers
+  requirements:
+  - Checking executables with setuid or setgid permissions
+  section: '4.8'
+- name: Dockerfile
+  requirements:
+  - Allow setuid and setgid permissions only on executables requiring them
+  section: '4.8'
+- name: Docker
+  requirements:
+  - Use COPY instead of ADD in Dockerfiles
+  section: '4.9'
+- name: Dockerfile
+  requirements:
+  - No ADD instructions in Dockerfiles
+  section: '4.9'
+- name: docker images
+  requirements:
+  - Run docker images to check for ADD instructions
+  section: '4.9'
+- name: docker history
+  requirements:
+  - Avoid ADD instructions when retrieving files from remote URLs
+  section: '4.9'
+- name: Configuration Templates
+  requirements:
+  - Use standard hardening configurations
+  section: '4.9'
+- name: Image Security
+  requirements:
+  - Maintain secure images
+  section: '4.9'
+- name: do not store any secrets in Dockerfiles
+  requirements:
+  - Do not store any secrets in Dockerfiles
+  section: '4.10'
+- name: run the below command to get the list of images
+  requirements:
+  - Run the below command to get the list of images
+  section: '4.10'
+- name: Verify Authenticity of Packages
+  requirements:
+  - Use GPG keys or other secure package distribution mechanisms.
+  - Ensure only currently supported software is designated as authorized.
+  section: '4.11'
+- name: Check Image History
+  requirements:
+  - Run docker history <IMAGE ID>
+  section: '4.11'
+- name: Document Authenticity Verification
+  requirements:
+  - Review the software list to verify software support at least monthly, or more
+    frequently.
+  section: '4.11'
+- name: Designate Unsupported Software
+  requirements:
+  - Document an exception detailing mitigating controls and residual risk acceptance.
+    For any unsupported software without an exception documentation, designate as
+    unauthorized.
+  section: '4.11'
+- name: Docker
+  requirements:
+  - Validate artifacts signatures before uploading to the package registry.
+  section: '4.12'
+- name: Artifact Signature
+  requirements:
+  - "Every artifact is supposed to be signed by its creator in order to verify that\
+    \ it wasn\u2019t compromised until it gets to the client."
+  - "Validating artifact signature before delivering it is another level of protection,\
+    \ which checks that the signature hasn\u2019t been changed, which means that no\
+    \ one tried or succeeded in tampering with the artifact."
+  section: '4.12'
+- name: Package Registry
+  requirements:
+  - Ensure every artifact in the package has been validated with its signature.
+  section: '4.12'
+- name: Docker Engine Instance
+  requirements:
+  - Do not enable swarm mode on a Docker engine instance unless this is needed.
+  section: '5.1'
+- name: Network Ports
+  requirements:
+  - Opening network ports on a system increases its attack surface and should be avoided
+    unless required.
+  section: '5.1'
+- name: Docker Enterprise Components
+  requirements:
+  - Disabling swarm mode will impact the operation of Docker Enterprise components
+    if these are in use.
+  section: '5.1'
+- name: Docker
+  requirements:
+  - Enable App Armor
+  section: '5.2'
+- name: Linux
+  requirements:
+  - Available on some Linux distributions by default
+  section: '5.2'
+- name: App Armor
+  requirements:
+  - Enforce security policies
+  section: '5.2'
+- name: Container
+  requirements:
+  - Security controls defined in App Armor profile
+  section: '5.2'
+- name: Docker Process
+  requirements:
+  - Run command to check App Armor profile
+  section: '5.2'
+- name: Docker Inspect
+  requirements:
+  - Return App Armor Profile
+  section: '5.2'
+- name: Docker Image
+  requirements:
+  - Validate App Armor profile
+  section: '5.2'
+- name: Docker Default Profile
+  requirements:
+  - Apply to running containers
+  section: '5.2'
+- name: Enable Anti-Exploitation Features
+  requirements:
+  - "Enable anti-exploitation features on enterprise assets and software, where possible,\
+    \ such as Microsoft\xAE Data Execution Prevention (DEP), Windows\xAE Defender\
+    \ Exploit Guard (WDEG), or Apple\xAE System Integrity Protection (SIP) and Gatekeeper."
+  section: '5.3'
+- name: Maintain Secure Images
+  requirements:
+  - "Maintain secure images or templates for all systems in the enterprise based on\
+    \ the organization\u2019s approved configuration standards. Any new system deployment\
+    \ or existing system that becomes compromised should be imaged using one of those\
+    \ images or templates."
+  section: '5.3'
+- name: Set SELinux State
+  requirements:
+  - Set the SELinux State.
+  section: '5.3'
+- name: Set the SELinux Policy
+  requirements:
+  - Set the SELinux Policy.
+  section: '5.3'
+- name: Create or import a SELinux policy template for Docker containers.
+  requirements:
+  - Create or import a SELinux policy template for Docker containers.
+  section: '5.3'
+- name: Start Docker in daemon mode with SELinux enabled
+  requirements:
+  - Start Docker in daemon mode with SELinux enabled.
+  section: '5.3'
+- name: Remove NET_RAW
+  requirements:
+  - Remove NET_RAW capability
+  section: '5.4'
+- name: Remove unnecessary capabilities
+  requirements:
+  - Remove all capabilities not required
+  section: '5.4'
+- name: Ensure container process needs are met
+  requirements:
+  - Ensure NET_RAW is removed if not needed
+  section: '5.4'
+- name: Use appropriate capabilities
+  requirements:
+  - Use capabilities specified by container process
+  section: '5.4'
+- name: Add required capabilities
+  requirements:
+  - Add required capabilities via `docker run`
+  section: '5.4'
+- name: Drop unused capabilities
+  requirements:
+  - Drop unneeded capabilities
+  section: '5.4'
+- name: Docker Container Capabilities
+  requirements:
+  - Avoid using the `--privileged` flag.
+  section: '5.5'
+- name: Linux Kernel Capabilities
+  requirements:
+  - Ensure the container does not have privileged capabilities.
+  section: '5.5'
+- name: Device Cgroup Controller
+  requirements:
+  - Do not use the `--privileged` flag.
+  section: '5.5'
+- name: Container Default Capabilities
+  requirements:
+  - Containers should not have excessive default capabilities.
+  section: '5.5'
+- name: Administrative Privileges
+  requirements:
+  - Restrict administrative privileges to dedicated administrators.
+  section: '5.5'
+- name: Do not allow sensitive host systems to be mounted as container volumes
+  requirements:
+  - Avoid mounting sensitive directories (e.g., /, /boot, /etc, /lib, /proc, /sys,
+    /usr) in read-write mode
+  section: '5.6'
+- name: Do not mount sensitive host systems within containers
+  requirements:
+  - Do not mount sensitive host systems within containers, especially in read-write
+    mode
+  section: '5.6'
+- name: SSH Daemon
+  requirements:
+  - Not running within the container
+  section: '5.7'
+- name: Container Access
+  requirements:
+  - No process for SSH server
+  section: '5.7'
+- name: Security Management Complexity
+  requirements:
+  - Difficult to manage access policies and security compliance
+  section: '5.7'
+- name: Key Management
+  requirements:
+  - Difficult to manage keys and passwords
+  section: '5.7'
+- name: Upgrade Management
+  requirements:
+  - Difficult to manage security upgrades
+  section: '5.7'
+- name: Shell Access
+  requirements:
+  - Possible shell access without SSH
+  section: '5.7'
+- name: Container Process Limit
+  requirements:
+  - Only one process per container
+  section: '5.7'
+- name: Remote Host Entry
+  requirements:
+  - Use docker exec to enter a container on the remote host
+  section: '5.7'
+- name: Docker
+  requirements:
+  - Do, however allow a container port to be mapped to a privileged port on the host.
+  section: '5.8'
+- name: privileged ports
+  requirements:
+  - Allow a container port to be mapped to a privileged port on the host if the user
+    explicitly declares it.
+  section: '5.8'
+- name: Container ports
+  requirements:
+  - You should then review the list and ensure that container ports are not mapped
+    to host port numbers below 1024.
+  section: '5.8'
+- name: Load Balancer
+  requirements:
+  - Forbidding to map privileged ports effectively forbids from running those in a
+    container, and mandates using an external load balancer.
+  section: '5.8'
+- name: Open necessary ports
+  requirements:
+  - Only open needed ports
+  section: '5.9'
+- name: Avoid unnecessary ports
+  requirements:
+  - Avoid unneeded ports
+  section: '5.9'
+- name: Use explicit publishing flags
+  requirements:
+  - Use -p or --publish flag
+  section: '5.9'
+- name: Expose specific ports
+  requirements:
+  - Expose specific ports
+  section: '5.9'
+- name: Ensure Dockerfile adheres to requirements
+  requirements:
+  - Dockerfile only exposes needed ports
+  section: '5.9'
+- name: Docker Container Networking Modes
+  requirements:
+  - Not allowed to containerize containers within separate networks.
+  section: '5.10'
+- name: Low Port Reserved Access
+  requirements:
+  - Container processes should not open reserved low numbered ports.
+  section: '5.10'
+- name: Access to Host Services
+  requirements:
+  - Container processes should be able to access network services (e.g., D-bus) from
+    the Docker host.
+  section: '5.10'
+- name: Potential for Host Shutdown
+  requirements:
+  - The `--net=host` option poses a risk of the Docker host being shut down.
+  section: '5.10'
+- name: Avoid Unnecessary Use
+  requirements:
+  - Never use the `--net=host` option when starting containers.
+  section: '5.10'
+- name: Set Memory Limits
+  requirements:
+  - Use `--memory` flag when running containers
+  section: '5.11'
+- name: Monitor Memory Usage
+  requirements:
+  - 'Run `docker ps --quiet --all | xargs docker inspect --format ''{{ .Id }}: Memory={{
+    .Host Config.Memory }}''`'
+  section: '5.11'
+- name: Enforce Resource Constraints
+  requirements:
+  - Ensure memory limits are defined for each container
+  section: '5.11'
+- name: Resource Management
+  requirements:
+  - Control the host CPU resources
+  section: '5.12'
+- name: CPU Sharing
+  requirements:
+  - Prioritize one container over others
+  section: '5.12'
+- name: CPU Thresholds
+  requirements:
+  - Avoid running out of resources
+  section: '5.12'
+- name: Container Responsiveness
+  requirements:
+  - Ensure high priority containers can claim CPU runtime
+  section: '5.12'
+- name: CPU Share Default
+  requirements:
+  - All containers default to 1024 shares
+  section: '5.12'
+- name: CPU Share Management
+  requirements:
+  - Manage CPU runtime between containers
+  section: '5.12'
+- name: CPU Shares Visibility
+  requirements:
+  - View CPU shares via /sys/fs/cgroup/cpu/docker/<CONTAINER ID>/cpu.shares
+  section: '5.12'
+- name: Enable use --read-only
+  requirements:
+  - Use --read-only
+  section: '5.13'
+- name: Define data persistence strategies
+  requirements:
+  - Define what the container's data should and should not persist at runtime
+  section: '5.13'
+- name: Implement read-only root filesystem
+  requirements:
+  - Add --read-only flag at container's runtime
+  section: '5.13'
+- name: Explicit Storage Locations
+  requirements:
+  - Using --tmpfs option for non-persistent data writes.
+  - Docker rw mounts for persistent data.
+  - Docker shared-storage volume plugin
+  section: '5.13'
+- name: Data Transmission Outside Container
+  requirements:
+  - Transmitting container data outside of Docker controlled area
+  section: '5.13'
+- name: Allow Container Services to Be Contacted Through Specific External Interface
+  requirements:
+  - Only allow container services to be contacted through a specific external interface
+    on the host machine.
+  section: '5.14'
+- name: Level 1 - Docker - Linux
+  requirements:
+  - Specify a restart policy
+  section: '5.15'
+- name: Description
+  requirements:
+  - Describe the restart policy
+  section: '5.15'
+- name: Rationale
+  requirements:
+  - Explain why restarting without a policy is risky
+  section: '5.15'
+- name: Impact
+  requirements:
+  - Detail the impact of not having a restart policy
+  section: '5.15'
+- name: Audit
+  requirements:
+  - Use the command to check restart policy
+  section: '5.15'
+- name: Remediation
+  requirements:
+  - Provide a sample command to enable automatic restart
+  section: '5.15'
+- name: Docker PID Namespace Isolation
+  requirements:
+  - Isolate processes within different PID namespaces.
+  - Prevent system processes from being visible.
+  section: '5.16'
+- name: Avoid Sharing Host PID Namespace
+  requirements:
+  - Do not share the host's process namespace with containers.
+  section: '5.16'
+- name: Secure Container Processes
+  requirements:
+  - Containers should not see processes on the host.
+  section: '5.16'
+- name: IPC Namespace
+  requirements:
+  - Should not be shared with containers
+  section: '5.17'
+- name: Container IPC Namespace
+  requirements:
+  - Should only be shared with containers
+  section: '5.17'
+- name: Host IPC Namespace
+  requirements:
+  - Should not be shared with containers
+  section: '5.17'
+- name: Docker Run Command
+  requirements:
+  - Do not use --ipc=host argument
+  section: '5.17'
+- name: Audit Command
+  requirements:
+  - 'Run docker ps --quiet --all | xargs docker inspect --format ''{{ .Id }}: icanpMode={{
+    .Host Config.Ipc Mode }}'''
+  section: '5.17'
+- name: Default IPC Setting
+  requirements:
+  - All containers have default IPC namespace enabled
+  section: '5.17'
+- name: Docker
+  requirements:
+  - Host devices can be directly exposed to containers at runtime
+  section: '5.18'
+- name: Device
+  requirements:
+  - Do not directly expose host devices to containers, especially to containers that
+    are not trusted.
+  section: '5.18'
+- name: w
+  requirements:
+  - Writable
+  section: '5.18'
+- name: m
+  requirements:
+  - Mknod allowed
+  section: '5.18'
+- name: ulimit
+  requirements:
+  - Honor the default ulimit set at the Docker daemon level
+  section: '5.19'
+- name: container runtime
+  requirements:
+  - Override the default ulimit settings during container runtime
+  section: '5.19'
+- name: default ulimit
+  requirements:
+  - Respect the default ulimit settings
+  section: '5.19'
+- name: container instance exceeding limit
+  requirements:
+  - Consider changing the default settings when many container instances exceed the
+    limit
+  section: '5.19'
+- name: audit
+  requirements:
+  - Run the command to check ulimit settings
+  section: '5.19'
+- name: override
+  requirements:
+  - Only override the default ulimit settings in specific cases
+  section: '5.19'
+- name: Mount Propagation Mode
+  requirements:
+  - Do not use shared mount propagation mode unless explicitly needed.
+  section: '5.20'
+- name: Shared Mount Propagation Mode
+  requirements:
+  - This feature should not be used unless explicitly required.
+  section: '5.20'
+- name: Volume Mounting
+  requirements:
+  - Do not mount volumes in shared mode propagation.
+  section: '5.20'
+- name: Container Run Example
+  requirements:
+  - 'Do not start a container as below:'
+  - docker run <Run arguments> --volume=/host Path:/container Path:shared <Container
+    Image Name or ID> <Command>
+  section: '5.20'
+- name: Enable UTS Namespace Isolation
+  requirements:
+  - Do not share the UTS namespace with the host
+  section: '5.21'
+- name: Prevent Host UTS Namespace Modification
+  requirements:
+  - Do not allow containers to change the host's UTS namespace
+  section: '5.21'
+- name: Disable `--uts=host` Argument
+  requirements:
+  - Do not use the `--uts=host` argument
+  section: '5.21'
+- name: Docker Seccomp Filtering
+  requirements:
+  - Block all other system calls
+  section: '5.22'
+- name: Custom Seccomp Profile Creation
+  requirements:
+  - Create custom seccomp profile when necessary
+  section: '5.22'
+- name: Container Security Audit
+  requirements:
+  - 'Run docker ps --quiet --all | xargs docker inspect --format ''{{ .Id }}: Security
+    Opt={{ .Host Config.Security Opt }}'''
+  section: '5.22'
+- name: Default Seccomp Profile Enablement
+  requirements:
+  - Enable default seccomp profile unless overridden
+  section: '5.22'
+- name: Docker
+  requirements:
+  - Do not use docker exec with the --privileged option.
+  section: '5.23'
+- name: Linux
+  requirements:
+  - Run containers with all the permissions they require.
+  section: '5.23'
+- name: Docker Execute
+  requirements:
+  - Avoid using docker exec with the --privileged option.
+  section: '5.23'
+- name: Auditing
+  requirements:
+  - Use the ausearch command to filter out docker exec commands using --privileged
+    option.
+  section: '5.23'
+- name: Administrator Privileges
+  requirements:
+  - Restrict administrator privileges to dedicated administrator accounts.
+  section: '5.23'
+- name: Docker
+  requirements:
+  - Do not use docker exec with the --user=root option.
+  section: '5.24'
+- name: Docker Exec
+  requirements:
+  - Do not use the --user=root option in docker exec commands.
+  section: '5.24'
+- name: Tomcat User
+  requirements:
+  - Avoid running commands as root using --user=root in docker exec commands.
+  section: '5.24'
+- name: Auditing
+  requirements:
+  - If auditing is enabled, use ausearch to filter out docker exec commands using
+    --user=root.
+  section: '5.24'
+- name: Administrator Privileges
+  requirements:
+  - Restrict administrator privileges to dedicated administrator accounts.
+  section: '5.24'
+- name: Attach to cgroup
+  requirements:
+  - Confirm cgroup usage
+  section: '5.25'
+- name: Monitor attachment
+  requirements:
+  - Confirmed attachment
+  section: '5.25'
+- name: Different cgroup
+  requirements:
+  - Other than original cgroup
+  section: '5.25'
+- name: Excess permissions
+  requirements:
+  - Potential security risk
+  section: '5.25'
+- name: Run `docker ps` command
+  requirements:
+  - Run command
+  section: '5.25'
+- name: Check cgroup status
+  requirements:
+  - Return cgroup id
+  section: '5.25'
+- name: Use `--cgroup-parent` option
+  requirements:
+  - Avoid using option
+  section: '5.25'
+- name: Docker
+  requirements:
+  - Restrict Administrator Privileges to Dedicated Administrator Accounts
+  section: '5.26'
+- name: Linux
+  requirements:
+  - Container from Linux
+  section: '5.26'
+- name: No_new_priv
+  requirements:
+  - Ensure process and child processes do not gain any additional privileges via suid
+    or sgid bits
+  section: '5.26'
+- name: Kernel
+  requirements:
+  - No_new_priv bit persists across forks, clones, and execve
+  section: '5.26'
+- name: Docker Inspect
+  requirements:
+  - 'Run docker ps --quiet --all | xargs docker inspect --format ''{{ .Id }}: {{ .Host
+    Config.Security Opt }}'''
+  section: '5.26'
+- name: Security Opt
+  requirements:
+  - no-new-privileges should be one of them
+  section: '5.26'
+- name: HEALTHCHECK
+  requirements:
+  - Use the --health-cmd parameter at container runtime
+  section: '5.27'
+- name: docker ps
+  requirements:
+  - Run the command below and ensure that all containers are reporting their health
+    status
+  section: '5.27'
+- name: docker inspect
+  requirements:
+  - Inspect the container's properties
+  section: '5.27'
+- name: stat
+  requirements:
+  - Check the `/etc/passwd` file
+  section: '5.27'
+- name: exit
+  requirements:
+  - Exit with code 1
+  section: '5.27'
+- name: Docker Repository
+  requirements:
+  - List image version history
+  section: '5.28'
+- name: Image Tag
+  requirements:
+  - Match version of image to latest version reported
+  section: '5.28'
+- name: Versioning Pinning
+  requirements:
+  - Use version pinning mechanisms
+  section: '5.28'
+- name: Cache Handling
+  requirements:
+  - Avoid extracting cached older versions
+  section: '5.28'
+- name: Docker
+  requirements:
+  - Use the --pids-limit flag at container runtime.
+  section: '5.29'
+- name: PIDs Limit
+  requirements:
+  - Prevent this kind of attack by restricting the number of forks that can happen
+    inside a container within a specified time frame.
+  section: '5.29'
+- name: Use Docker's user-defined networks instead of Docker's default bridge
+  requirements:
+  - Configure and manage user-defined networks
+  section: '5.30'
+- name: Avoid using Docker's default bridge (docker0)
+  requirements:
+  - Do not use Docker's default bridge
+  section: '5.30'
+- name: Verify containers are running on user-defined networks
+  requirements:
+  - Run the command below, and verify that containers are on a user-defined network
+    and not the default docker0 bridge
+  section: '5.30'
+- name: Share Host User Namespaces
+  requirements:
+  - Do not share the host's user namespaces with containers.
+  section: '5.31'
+- name: Avoid Shared User Namespaces
+  requirements:
+  - Do not share user namespaces between host and containers.
+  section: '5.31'
+- name: Ensure Container Isolation
+  requirements:
+  - Do not share user namespaces of the host with containers.
+  section: '5.31'
+- name: Docker Socket
+  requirements:
+  - not mount inside a container
+  section: '5.32'
+- name: Image IDs
+  requirements:
+  - 'docker images --quiet | xargs docker inspect --format ''{{ .Id }}: Image={{ .Config.Image
+    }}'''
+  section: '6.1'
+- name: Images Present
+  requirements:
+  - docker images
+  section: '6.1'
+- name: Unused Images
+  requirements:
+  - compare the list of image IDs from Step 1 and Step 2
+  section: '6.1'
+- name: Docker Containers
+  requirements:
+  - Keep the number of containers on a given host to the minimum number commensurate
+    with serving production applications.
+  section: '6.2'
+- name: Containers Stopped
+  requirements:
+  - Execute the commands below to find the total number of containers that are actually
+    running or in the stopped state on the host.
+  section: '6.2'
+- name: Secure Configuration of Enterprise Assets and Software
+  requirements:
+  - Establish and maintain the secure configuration of enterprise assets (end-user
+    devices, including portable and mobile; network devices; non-computing/IoT devices;
+    and servers).
+  section: '6.2'
+- name: Docker Swarm
+  requirements:
+  - Ensure the minimum number of required manager nodes is created in a swarm.
+  section: '7.1'
+- name: Nodes
+  requirements:
+  - 'If an excessive number of managers is configured, the excess nodes can be demoted
+    to workers using the following command: docker node demote <ID>'
+  section: '7.1'
+- name: Configuration Settings
+  requirements:
+  - Establish and maintain the secure configuration of enterprise assets (end-user
+    devices, including portable and mobile; network devices; non-computing/IoT devices;
+    and servers).
+  section: '7.1'
+- name: Security Configuration
+  requirements:
+  - Maintain documented, standard security configuration standards for all authorized
+    operating systems and software.
+  section: '7.1'
+- name: Version Control
+  requirements:
+  - Establish and maintain the secure configuration of enterprise assets (end-user
+    devices, including portable and mobile; network devices; non-computing/IoT devices;
+    and servers.)
+  section: '7.1'
+- name: Docker Swarm
+  requirements:
+  - Listen on all available host interfaces
+  section: '7.2'
+- name: Network Interfaces
+  requirements:
+  - Limit exposure to specific network interfaces
+  section: '7.2'
+- name: Firewall
+  requirements:
+  - Implement and manage a firewall on servers
+  section: '7.2'
+- name: Port 2377
+  requirements:
+  - Only listen on specific interfaces
+  section: '7.2'
+- name: Port 7946
+  requirements:
+  - Only listen on specific interfaces
+  section: '7.2'
+- name: Docker Swarm Overlay Networks
+  requirements:
+  - Ensure that all Docker swarm overlay networks are encrypted.
+  section: '7.3'
+- name: Overlay Network Encryption
+  requirements:
+  - You should run the command below to ensure that each overlay network has been
+    encrypted.
+  - Create overlay networks the with --opt encrypted flag.
+  section: '7.3'
+- name: Encryption Method
+  requirements:
+  - Encrypt sensitive data in transit.
+  - 'Example implementations can include: Transport Layer Security (TLS) and Open
+    Secure Shell (OpenSSH).'
+  section: '7.3'
+- name: Sensitive Data Encryption
+  requirements:
+  - Encrypt sensitive data in transit.
+  section: '7.3'
+- name: Docker Secret Management
+  requirements:
+  - Use Docker's in-built secret management command
+  section: '7.4'
+- name: Secure Configuration of Enterprise Assets and Software
+  requirements:
+  - Establish and maintain the secure configuration of enterprise assets (end-user
+    devices, including portable and mobile; network devices; non-computing/IoT devices;
+    and servers) and software (operating systems and applications)
+  section: '7.4'
+- name: docker secret ls
+  requirements:
+  - Run the command below and ensure docker secret management is used
+  section: '7.4'
+- name: Docker Swarm
+  requirements:
+  - Review whether to run Docker swarm manager in auto-lock mode
+  section: '7.5'
+- name: TLS Key Protection
+  requirements:
+  - Protect mutual TLS encryption key and Raft log decryption key
+  section: '7.5'
+- name: Autolock Flag
+  requirements:
+  - Initialize swarm with --autolock flag
+  section: '7.5'
+- name: Unlock Key
+  requirements:
+  - Run docker swarm unlock-key command
+  section: '7.5'
+- name: Swarm Autolock Mode
+  requirements:
+  - If auto-lock mode is enabled, must unlock the swarm first
+  section: '7.5'
+- name: Restart Without Intervention
+  requirements:
+  - Avoid recovery from a restart without manual intervention
+  section: '7.5'
+- name: Policy Review
+  requirements:
+  - Should be reviewed at a policy level
+  section: '7.5'
+- name: Audit Command
+  requirements:
+  - 'Run docker info --format ''Swarm Autolock: ...'''
+  section: '7.5'
+- name: Existing Swarm Manager Node
+  requirements:
+  - If a key value is returned, it means the swarm was initialized with the --autolock
+    flag
+  section: '7.5'
+- name: swarm manager auto-lock key
+  requirements:
+  - Rotate periodically
+  section: '7.6'
+- name: key rotation
+  requirements:
+  - Check with system administrator
+  section: '7.6'
+- name: key rotation records
+  requirements:
+  - Maintain key rotation records
+  section: '7.6'
+- name: frequency for key rotation
+  requirements:
+  - Establish a pre-defined frequency
+  section: '7.6'
+- name: Docker Swarm
+  requirements:
+  - Rotate swarm node certificates in line with your organizational security policy.
+  section: '7.7'
+- name: Node Certificates
+  requirements:
+  - Rotate node certificates every 90 days, but rotate them more often or as appropriate
+    in your environment.
+  section: '7.7'
+- name: Expiry Duration
+  requirements:
+  - Set the desired expiry time on the node certificate.
+  section: '7.7'
+- name: Root CA Certificates
+  requirements:
+  - Rotate regularly
+  section: '7.8'
+- name: Certificate Timestamps
+  requirements:
+  - Check timestamp on root CA certificate files
+  section: '7.8'
+- name: Rotation Process
+  requirements:
+  - Establish a process for rotating certificates
+  section: '7.8'
+- name: Organizational Security Policy
+  requirements:
+  - Align rotation with organizational policy
+  section: '7.8'
+- name: Level 1 - Docker Swarm
+  requirements:
+  - Separate management plane traffic from data plane traffic
+  section: '7.9'
+- name: Two network interfaces per node
+  requirements:
+  - Requires two network interfaces per node
+  section: '7.9'
+- name: Run command below on each swarm node and ensure that the management plane
+    address is different from the data plane address.
+  requirements:
+  - Run the command below on each swarm node and ensure that the management plane
+    address is different from the data plane address
+  section: '7.9'

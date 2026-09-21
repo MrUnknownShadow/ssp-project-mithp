@@ -1,1 +1,336 @@
-NO DIFFERENCES IN REGARDS TO ELEMENT REQUIREMENTS
+Access Control Lists,apply data access control lists
+Access Control Lists,Configure data access control lists
+Access Control Lists,Protect information
+Access Control Lists,execute stat -c %a /etc/docker
+Add rule for /usr/bin/runc,Add a rule to /etc/audit/audit.rules for /usr/bin/runc
+Add rule for /usr/bin/runc,Add a rule to /etc/audit/audit.rules
+Artifact Signature,Every artifact is supposed to be signed by its creator in order to verify that it wasn’t compromised until it gets to the client.
+Artifact Signature,Validating artifact signature before delivering it is another level of protection, which checks that the signature hasn’t been changed, which means that no one tried or succeeded in tampering with the artifact.
+Artifact Signature,Every artifact is supposed to be signed by its creator in order to verify that it wasn’t compromised until it got to the client.
+Audit,Use the command to check restart policy
+Audit,Check Restart Policy Name
+Audit,Review dockerd startup options
+Audit,Run docker ps --quiet
+Audit /var/lib/docker,Verify an audit rule exists
+Audit /var/lib/docker,Audit this directory
+Audit Command,Execute 'auditctl -l | grep /etc/docker/daemon.json'
+Audit Command,execute 'auditctl -l | grep /etc/containerd/config.toml'
+Audit Command,execute auditctl -l | grep /etc/sysconfig/docker
+Audit Command,Execute the below command and verify that aufs is not used as storage driver: docker info --format 'Storage Driver: {{ .Driver }}'
+Audit Daemon Restart,Restart the audit daemon after adding the rule
+Audit Daemon Restart,restart the audit daemon
+Audit Rule,Execute auditctl -l | grep /usr/bin/containerd
+Audit Rule,Verify an audit rule exists relating to /etc/sysconfig/docker file
+Audit Rule Existence,If the file does not exist, this recommendation is not applicable. If the file exists, you should verify that there is an audit rule corresponding to the file: auditctl -l | grep docker.socket
+Audit Rule Existence,If the file does not exist, this recommendation is not applicable. If the file exists, you should verify that there is an audit rule corresponding to the file: auditctl -l | grep docker.sock
+Auditing,If auditing is enabled, use ausearch to filter out docker exec commands using --user=root.
+Auditing,Use the ausearch command to filter out docker exec commands using --privileged option.
+Auditing,Use ausearch -k docker | grep exec | grep user to filter out docker exec commands using --user=root.
+Auditing,Use the ausearch command to filter out docker exec commands that use the --privileged option.
+Base Image & Build Files,Proper base images and build files
+Base Image & Build Files,Ensure that you are using proper base images and appropriate build files
+Chown Command,sets the individual ownership and group ownership for the Docker server certificate key file to root
+Chown Command,sets the individual ownership and group ownership for the TLS CA certificate file to root
+Chown Command,Set the individual ownership and group ownership to root.
+Configuration File Location,systemctl show -p Fragment Path docker.socket
+Configuration File Location,Systemctl show -p Fragment Path docker.sock
+Configuration Files,Ensure configuration files are located in the same user namespace as the daemon
+Configuration Files,Maintain a secure configuration process for enterprise assets
+Configuration Files,Validate all configuration files against security guidelines
+Configuration Setting,Add a rule for /etc/audit/audit.rules file
+Configuration Setting,this file may not be present
+Configuration Setting,/etc/containerd/config.toml
+Configuration Setting,file permissions
+Configuration Setting,should be individually owned and group owned by root
+Configuration Templates,Use standard hardening configurations
+Configuration Templates,Use hardened configuration templates
+Configure Data Access Control Lists,Apply data access control lists to local and remote file systems, databases, and applications
+Configure Data Access Control Lists,Configure data access control lists based on a user's need to know
+Container,Security controls defined in App Armor profile
+Container,Do not share user namespaces between host and containers.
+Container,Enforce App Armor policy on containers
+Container Instances,Run commands to check for availability
+Container Instances,Only run containers with specified ports
+Container Instances,Run ps
+Container Instances,Run ps -el <CONTAINER ID>
+Container Mapping,Do not allow mapping of sensitive directories from the host to container volumes.
+Container Mapping,Prevent container mappings from granting elevated privileges via the Docker host's root directory.
+Container Mapping,Do not create mappings of sensitive directories from the host to container volumes.
+Container Mapping,Prevent container mappings of host directories to container volumes.
+Containerd Socket Permissions,660 or stricter permissions
+Containerd Socket Permissions,have permissions of 660 or are configured more restrictively
+Containers,No unnecessary software packages
+Containers,Re-build images
+Containers,Incorrect values might leave containers unusable.
+Containers,No unnecessary software
+Containers,Restart
+Content Trust,Follow trust procedures while working with tagged images
+Content Trust,Follow trust procedures while working with image related commands
+Create a dedicated audit log partition,Create a partition for audit logs
+Daemon Configuration,Review /etc/docker/daemon.json for --iptables parameter
+Daemon Configuration,Audit daemon configuration ensures proper operation
+Daemon Restart,Base device size can be increased upon daemon restart
+Daemon Restart,Base device size can be increased during daemon restarts
+Daemon.json,Review `/etc/docker/daemon.json` for `--userland-proxy` setting
+Daemon.json,Review /etc/docker/daemon.json for --iptables parameter
+Daemon.json,Review `/etc/docker/daemon.json`
+Daemon.json,correctly set to root, if it is in use.
+Data Access Control Lists,Configure data access control lists
+Data Access Control Lists,Configure data access control lists based on a user's need to know
+Data Access Control Lists,based on a user's need to know
+Data Access Control Lists,protect all information stored on systems with file system, network share, claims, application, or database specific access control lists
+Data Access Control Lists,Protect information through access control lists
+Data Access Control Lists,Protect information via access control lists
+Data Access Control Lists,protect all information with access control lists
+Data Access Control Lists,protect information
+Data Access Control Lists (ACL),Ensure authorization based on need
+Data Access Control Lists (ACL),Configure data access control lists based on a user's need to know
+Default Socket Ownership,Default ownership is Root:root
+Default Socket Ownership,Owner and group ownership should be Root:root
+Default Value,By default, Docker related files and directories are not audited. The file docker.socket may not be present, but if it is, it should be audited.
+Default Value,By default, new privileges are not restricted
+Default Value,False.
+Denial of Service Condition,Allocated partition becomes full
+Denial of Service Condition,Allocate sufficient space for images to prevent full partitions
+Description,Describe the restart policy
+Description,Specify a restart policy
+Directory Permissions,Ensure permissions of /etc/docker/certs.d/<registry-name> directory is 444 or more restrictive
+Docker,Assume all, but local registries are secure
+Docker,Do not enable experimental features in production.
+Docker,Do not use OS package manager update instructions such as apt-get update 2
+Docker,Do not use aufs as the storage driver for your Docker instance.
+Docker,Do, however allow a container port to be mapped to a privileged port on the host.
+Docker,Image scans frequently
+Docker,Restrict Administrator Privileges to Dedicated Administrator Accounts
+Docker,Set the default cgroup parent to use for all containers
+Docker,Small footprint
+Docker,Allow a container port to be mapped to a privileged port
+Docker,Choose to apply a custom seccomp profile at a daemon-wide level
+Docker,Do not share the host’s user namespaces with containers running on it.
+Docker,Do not use the --privileged flag.
+Docker,Leave at its default
+Docker,Minimize footprint
+Docker,Restrict administrator privileges to dedicated administrator accounts
+Docker,Scanned frequently
+Docker Base Device Size,Increase base device size when applicable
+Docker Base Device Size,Increase base device size when exceeding 10GB
+Docker Client Credentials,configure TLS client credentials
+Docker Client Credentials,TLS client credentials
+Docker Containers,Allow connections to the outside world
+Docker Daemon,Audit /etc/docker/daemon.json
+Docker Daemon,Audit /etc/sysconfig/docker
+Docker Daemon,Audit /usr/bin/containerd
+Docker Daemon,Ensure Docker daemon is configured to enable live restore
+Docker Daemon,Ensure `--no-new-privileges` parameter is present and not set to false
+Docker Daemon,Ensure the Experimental property is set to false in the Server section.
+Docker Daemon,bind to a TCP port
+Docker Daemon,Do not enable experimental features in production
+Docker Daemon,Enable Docker daemon mode
+Docker Daemon,Review dockerd start-up options and check settings in /etc/docker/daemon.json
+Docker Daemon,available remotely over a TCP port
+Docker Daemon Binding,ensure Docker daemon binding to TCP port
+Docker Daemon Binding,not bound to another IP/port or a Unix socket
+Docker Daemon Configuration,review dockerd start-up options
+Docker Daemon Configuration,contents of /etc/docker/daemon.json
+Docker Default Profile,Apply to running containers
+Docker Default Profile,Utilize Docker's default App Armor profile
+Docker Exec,Avoid using docker exec with the --privileged option.
+Docker Image,Validate App Armor profile
+Docker Image,Verify App Armor is installed
+Docker Images,Avoid adding update instructions in a single line on the Dockerfile
+Docker Images,Ensure images are sourced from trusted channels.
+Docker Images,Removing setuid and setgid permissions
+Docker Images,Scan for vulnerabilities regularly.
+Docker Images,Do not use OS package manager update instructions such as apt-get update 2, yum update 3
+Docker Images,Removing setuid and setgid permissions in the images can prevent privilege escalation attacks within containers.
+Docker Inspect,Return App Armor Profile
+Docker Inspect,Run docker ps --quiet --all | xargs docker inspect --format '{{ .Id }}: {{ .Host Config.Security Opt }}'
+Docker Inspect,List running containers and their port mappings
+Docker Inspect,Run docker inspect --format '{{ .Id }}: {{ .Host Config.Security Opt }}'
+Docker Process,Run command to check App Armor profile
+Docker Process,Run docker ps --quiet --all | xargs docker inspect --format '{{ .Id }}: App Armor Profile={{ .App Armor Profile}}'
+Docker Root Directory,Create a separate partition for the /var/lib/docker mount point.
+Docker Root Directory,Create a separate partition for storing Docker files
+Docker Server,TLS CA certificate file permissions of 444 or more restrictive
+Docker Server,Protection from tampering
+Docker Server Certificate File,Permissions must be 444 or more restrictive
+Docker Server Certificate File,Has permissions of 444 or more restrictive permissions
+Docker Server Certificate Key File,individually owned and group owned by root
+Docker Server Certificate Key File,individually owned and group owned by root.
+Docker Socket,not mount inside a container
+Docker Socket Permissions,660 or stricter permissions
+Docker Socket Permissions,have permissions of 660 or are configured more restrictively
+Docker Swarm,Listen on all available host interfaces
+Docker Swarm,Separate management plane traffic from data plane traffic
+Docker Swarm,Specify a specific interface
+Docker daemon,Docker server will automatically make any required changes
+Dockerd,Review dockerd startup options and settings in /etc/docker/daemon.json
+Dockerd,Run Dockerd as `dockerd --no-new-privileges`
+Dockerd,Check dockerd startup options and settings in /etc/docker/daemon.json
+Dockerd,Run Dockerd with --no-new-privileges
+Dockerd Startup Options,Ensure --iptables parameter is not present or not set to false
+Dockerd Startup Options,Set `--userland-proxy=false`
+Dockerd Startup Options,--tlscacert
+Dockerd Startup Options,Review dockerd startup options to ensure 'dm.basesize' parameter is absent
+Dockerd startup options,Use --iptables=false when starting Docker daemon
+Dockerfile,Allow setuid and setgid permissions only on executables requiring them
+Dockerfile,Audit /usr/bin/containerd-shim-runc-v1
+Dockerfile,Contain information about the user's name or ID
+Dockerfile,Ensure containerd-shim-runc-v2 is audited
+Dockerfile,No ADD instructions in Dockerfiles
+Dockerfile,Use update instructions together with install instructions and version pinning for packages while installing them
+Dockerfile,Do not pass `--experimental` as a runtime parameter to the Docker daemon on production systems
+Dockerfile,Ensure --cgroup-parent parameter is either not set or is set as appropriate non-default cgroup
+Dockerfile,Ensure all Dockerfiles contain appropriate security checks
+Dockerfile,Ensure proper documentation of build process
+Dockerfile,Ensure proper image building process
+Dockerfile,No ADD instructions
+Dockerfile,No tampering
+Dockerfile,Only expose needed ports
+Dockerfile,Use update instructions together with install instructions and version pinning 3
+Existing Swarm Manager Node,If a key value is returned, it means the swarm was initialized with the --autolock flag
+Existing Swarm Manager Node,Check if swarm was initialized with --autolock flag
+File Permissions,644
+File Permissions,Set file permissions to 444 or more restrictive
+File Permissions,correctly set to 644
+File Permissions,verify file permissions on docker.socket are correctly set to 644 or more restrictively
+File Permissions,Set permissions for registry certificate files to 444
+File Permissions,correctly set to 644 or restrictively
+File Permissions,verify file permissions on docker.socket
+HEALTHCHECK,Ensure that Docker engine periodically checks the running container instances against that instruction to ensure that containers are still operational.
+HEALTHCHECK,Add the HEALTHCHECK instruction to your Docker container images
+Hairpin NAT,Disable the hairpin NAT mode
+Hairpin NAT,Disable hairpin NAT
+Impact,Detail the impact of not having a restart policy
+Impact,Container restarts limited to 5 attempts
+Keep a tab on these product updates,Monitor Docker updates
+Keep a tab on these product updates,Monitor software versions
+Kernel,No_new_priv bit persists across forks, clones, and execve
+Kernel,No_new_priv bits persist across forks, clones, and execve
+Level 1 - Docker - Linux,Specify a restart policy
+Level 1 - Docker - Linux,Use on-failure restart policy
+Linux,Available on some Linux distributions by default
+Linux,Level 1 - Docker - Linux
+Linux,Container runs on Linux
+Linux,Use App Armor on Linux
+Linux Kernel Capabilities,Ensure the container does not have privileged capabilities.
+Linux Kernel Capabilities,Ensure it is not used.
+Load Balancer,Forbidding to map privileged ports effectively forbids from running those in a container, and mandates using an external load balancer.
+Load Balancer,Prevent mapping privileged ports to host ports
+Maintain Socket Integrity,Ensure Docker socket is owned by root and docker
+Maintain Socket Integrity,Owner should be root and group should be docker
+Mount Point,Return whether the configured root directory is a mount point.
+Mount Point,Return whether the configured root directory is a mount point
+Network Architecture Security,Establish and maintain a secure network architecture
+Network Architecture Security,Secure network architecture must address segmentation, least privilege, and availability
+Network Interfaces,Limit exposure to specific network interfaces
+Network Interfaces,Limit swarm service exposure to specific interfaces
+Node Certificates,Rotate node certificates every 90 days, but rotate them more often or as appropriate in your environment.
+Node Certificates,Should rotate them more often or as appropriate in your environment.
+Nodes,If an excessive number of managers is configured, the excess nodes can be demoted to workers using the following command: docker node demote <ID>
+Nodes,Where <ID> is the node ID value of the manager to be demoted.
+Non-Privileged User Interaction,Non-privileged users can interact with containers
+Non-Privileged User Interaction,No non-privileged user or process can interact with the containerd daemon
+Operating System Patch Level,Appropriate level
+Operating System Patch Level,Appropriate
+Package Registry,Ensure every artifact in the package has been validated with its signature.
+Package Registry,Validate artifact signature before delivering it is another level of protection, which checks that the signature hasn’t been changed, which means that no one tried or succeeded in tampering with the artifact.
+Patches,Update systems
+Patches,Updated
+Policy Review,Should be reviewed at a policy level
+Policy Review,Review impact on organizational IT Security Policy
+Port Forwarding,Enable port forwarding when possible
+Port Forwarding,Improve performance
+Prevent Non-Privileged Interaction,Non-privileged users cannot interact with containers
+Prevent Non-Privileged Interaction,Avoid non-privileged users interacting with Docker daemon
+Rationale,Explain why restarting without a policy is risky
+Rationale,Prevent denial of service attacks
+Registry Certificate Files,Verify permissions of registry certificate files
+Remediation,Provide a sample command to enable automatic restart
+Remediation,Set Restart Policy to on-failure
+Restart Audit Daemon,Restart the audit daemon after adding the rule
+Restart audit daemon,Restart the audit daemon after adding the rule
+Restart audit daemon,Restart audit daemon
+Rotate and Archive Audit Logs,Ensure that these are rotated and archived periodically.
+Rotate and Archive Audit Logs,Rotate and archive audit logs for /usr/bin/containerd-shim file
+Rotate and Archive Audit Logs,Rotate and archive periodically.
+Rotate and archive audit logs,Rotate and archive audit logs regularly
+SCAP-Compliant Scanning Tool,Use a tool
+SCAP-Compliant Scanning Tool,Used
+SELinux,Prevent LSMs (e.g., SELinux) from escalating privileges
+SELinux,Prevent LSMs from escalating privileges
+SSH Daemon,Not running within the container
+SSH Daemon,Not running within the container.
+Secure Configuration of Enterprise Assets and Software,Establish and maintain the secure configuration of enterprise assets (end-user devices, including portable and mobile; network devices; non-computing/IoT devices; and servers) and software (operating systems and applications)
+Secure Configuration of Enterprise Assets and Software,Establish and maintain the secure configuration of enterprise assets (end-user devices, including portable and mobile; network devices; non-computing/IoT devices; and servers).
+Secure Configuration of Enterprise Assets and Software,Establish and maintain the secure configuration of enterprise assets (end-user devices, including portable and mobile; network devices; non-computing/IoT devices; and servers)
+Set Memory Limits,Use `--memory` flag when running containers
+Set Memory Limits,If no limits are present, run a container with `--memory` flag to specify memory limits.
+Set Memory Limits,Run `docker ps --quiet --all` command to check for memory limits.
+Stat Command,Execute stat -c %a <path to Docker server certificate file>
+Stat Command,Execute stat -c %a <path to TLS CA certificate file>
+Stat Command,Verify permissions
+Stat Command,return no results
+Stat Command,Execute the command below to verify that the Docker server certificate file has permissions of 444 or more restrictive permissions
+Stat Command,File permissions of 400
+Stat Command,Return no results.
+Stat Command,Verify permissions of 444 or more restrictive
+Stat Command,return no results.
+Swarm Autolock Mode,If auto-lock mode is enabled, must unlock the swarm first
+Swarm Autolock Mode,Ensure auto-lock mode is enabled
+TLS Authentication,configure TLS authentication
+TLS Authentication,configured in order to restrict access to the Docker daemon via IP address and port
+TLS CA Certificate File,individually owned and group owned by root
+TLS CA Certificate File,Individual owner and group owned by root.
+Tomcat User,Avoid running commands as root using --user=root in docker exec commands.
+Tomcat User,Avoid running commands as root using --user=root in a container running as a Tomcat user.
+UID,Effective UID for each container
+UID,Return effective UID
+Unauthorized Access Prevention,No other user or process can interact with Containerd daemon
+Unauthorized Access Prevention,No other user or process owning the socket
+Userland Proxy Service,Disable the userland proxy service
+Userland Proxy Service,Disable userland proxy
+Verify Docker Socket Ownership,Own Docker socket by root and docker
+Verify Docker Socket Ownership,Ensure Docker socket is owned by root and docker
+Vulnerabilities,Loopholes or bugs
+Vulnerabilities,Found
+audit,Run the command to check ulimit settings
+audit,Run `docker ps` command to check ulimit values
+auditctl,Ensure an audit rule exists for /usr/bin/containerd-shim-runc-v1
+auditd,Restart the audit daemon after adding the rule
+auditd,Restart the audit daemon.
+auditd,Restart the audit daemon
+chmod 444,Set the file permissions of the Docker server certificate file to 444
+container runtime,Override the default ulimit settings during container runtime
+container runtime,Override defaults appropriately
+default ulimit,Respect the default ulimit settings
+default ulimit,define a default ulimit
+default ulimit,Respect the default ulimit
+default value,By default, Docker related files and directories are not audited.
+default value,no ulimit is set
+docker history,Avoid ADD instructions when retrieving files from remote URLs
+docker history,Avoid ADD instructions in Dockerfiles
+docker inspect,Run the command below to ensure that Docker images have the appropriate HEALTHCHECK instruction configured.
+docker ps,Run instances to check installed packages
+docker.service,Audit the docker.service if applicable.
+docker.service,Ensure that these are rotated and archived periodically.
+docker.service,set permissions to 644
+docker.service,Audit the docker.service
+file,verify that the /etc/sysconfig/docker file individual ownership and group ownership is correctly set to root.
+file,/etc/subgid
+file,/etc/subuid
+gosu,Use as part of the CMD or ENTRYPOINT
+gosu,Use gosu
+key rotation,Check with system administrator
+key rotation,Maintain key rotation records
+stat,should execute the command below to verify that the file is owned and group owned by root.
+stat,not return any results or, if there is no daemon.json file present it will return: stat: cannot stat '/etc/docker/daemon.json': No such file or directory.
+stat -c %a /etc/docker/daemon.json,Check if the file exists and is accessible
+stat -c %a /etc/docker/daemon.json,Execute command to verify file permissions
+swarm manager auto-lock key,Rotate periodically
+swarm manager auto-lock key,Rotate the swarm manager auto-lock key periodically
+ulimit,Honor the default ulimit set at the Docker daemon level
+ulimit,Honor the default ulimit settings
+v8,Configuration of Data Access Control Lists
+v8,Configure data access control lists
+v8,Use Standard Hardening Configuration Templates
