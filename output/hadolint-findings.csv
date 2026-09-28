@@ -1,0 +1,9 @@
+FilePath,DefaultSeverity,RULEID,COUNT
+data/dockerfiles/Dockerfile.bad,warning,DL3002,1
+data/dockerfiles/Dockerfile.bad,warning,DL3007,1
+data/dockerfiles/Dockerfile.bad,warning,DL3008,1
+data/dockerfiles/Dockerfile.bad,info,DL3009,1
+data/dockerfiles/Dockerfile.bad,info,DL3015,1
+data/dockerfiles/Dockerfile.bad,info,DL3066,1
+data/dockerfiles/Dockerfile.ok,warning,DL3008,1
+data/dockerfiles/Dockerfile.ok,info,DL3066,1
