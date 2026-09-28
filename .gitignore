@@ -5,3 +5,7 @@ output/
 .DS_Store
 .cursor/
 smoke_test.py
+dist/
+build/
+*.spec
+cache.zip
