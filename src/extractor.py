@@ -10,10 +10,10 @@ import logging
 import os
 import re
 
-import torch
+
 import yaml
 from pypdf import PdfReader
-from transformers import pipeline
+
 
 CACHE_DIR = "cache"
 
@@ -213,6 +213,9 @@ def get_pipeline():
     """Load Gemma once and reuse it across calls."""
     global _pipe
     if _pipe is None:
+        import torch
+        from transformers import pipeline
+
         if torch.cuda.is_available():
             device = "cuda"
         elif torch.backends.mps.is_available():
