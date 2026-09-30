@@ -136,26 +136,34 @@ def _extract_changed_terms(reports):
 # ---------------------------------------------------------------------------
 
 
-def run_hadolint(dockerfile_dir, rule_ids=None):
+def run_hadolint(dockerfile_dir, rule_ids=None, batch_size=300):
     """Task-3: run Hadolint over a directory and return findings as a DataFrame."""
     if not os.path.isdir(dockerfile_dir):
         raise ExecutorInputError(f"Directory not found: {dockerfile_dir}")
 
     paths = sorted(
-        os.path.join(dockerfile_dir, name)
-        for name in os.listdir(dockerfile_dir)
-        if os.path.isfile(os.path.join(dockerfile_dir, name))
+        os.path.join(root, name)
+        for root, _, names in os.walk(dockerfile_dir)
+        for name in names
+        if not name.startswith(".") and "__MACOSX" not in root
     )
     if not paths:
         raise ExecutorInputError(f"No Dockerfiles in: {dockerfile_dir}")
 
-    command = ["hadolint", "--format", "json"] + paths
-    completed = subprocess.run(command, capture_output=True, text=True)
+    findings = []
+    for start in range(0, len(paths), batch_size):
+        batch = paths[start : start + batch_size]
+        completed = subprocess.run(
+            ["hadolint", "--format", "json"] + batch,
+            capture_output=True,
+            text=True,
+        )
+        try:
+            findings.extend(json.loads(completed.stdout or "[]"))
+        except json.JSONDecodeError as exc:
+            raise ExecutorInputError("Hadolint did not return valid JSON") from exc
 
-    try:
-        findings = json.loads(completed.stdout or "[]")
-    except json.JSONDecodeError as exc:
-        raise ExecutorInputError("Hadolint did not return valid JSON") from exc
+        print(f"  scanned {min(start + batch_size, len(paths))}/{len(paths)}", flush=True)
 
     frame = pd.DataFrame(findings)
     if frame.empty:
@@ -165,7 +173,6 @@ def run_hadolint(dockerfile_dir, rule_ids=None):
         frame = frame[frame["code"].isin(rule_ids)]
 
     return frame.reset_index(drop=True)
-
 
 # ---------------------------------------------------------------------------
 # Function 4: write the CSV

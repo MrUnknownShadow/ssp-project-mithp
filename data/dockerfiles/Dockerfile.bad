@@ -1,5 +1,0 @@
-FROM ubuntu:latest
-RUN apt-get update
-RUN apt-get install -y curl
-ADD https://example.com/file.tar.gz /tmp/
-USER root
