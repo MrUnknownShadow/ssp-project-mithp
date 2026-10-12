@@ -69,6 +69,7 @@ Run the full pipeline over a pair of documents:
 
 ```
 python3 src/main.py data/docker-cis-v0.pdf data/docker-cis-v1.pdf
+Prebuilt macOS binary: https://github.com/MrUnknownShadow/ssp-project-mithp/releases/tag/v1.0
 ```
 
 Options:
